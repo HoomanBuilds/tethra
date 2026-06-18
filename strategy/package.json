@@ -1,0 +1,19 @@
+{
+  "name": "plp-ladder-strategy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "backtest": "tsx src/sim/backtest.ts",
+    "overlays": "tsx src/sim/overlays.ts",
+    "hedge": "tsx src/sim/hedge.ts",
+    "verify": "tsx src/sim/verify.ts",
+    "econ": "tsx src/sim/econ.ts",
+    "stress": "tsx src/sim/stress.ts",
+    "validate": "tsx src/svi/validate.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}

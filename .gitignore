@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.env
+.env.*
+*.sqlite
+pnpm-lock.yaml
+pnpm-workspace.yaml
+.claude/settings.local.json
+.playwright-mcp/
+.DS_Store
+docs/
+vendor/
+data/svi_*.json
+data/prices_*.json
