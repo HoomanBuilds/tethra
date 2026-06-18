@@ -3,26 +3,26 @@
 import { useEffect, useState, useRef } from "react";
 
 const metrics = [
-  { 
-    value: 12847392, 
-    suffix: "", 
+  {
+    value: 4027,
+    suffix: "",
     prefix: "",
-    label: "Tasks completed today",
-    sublabel: "by 23,847 active agents",
+    label: "Settled oracles backtested",
+    sublabel: "plus BTC crash stress tests",
   },
-  { 
-    value: 99, 
-    suffix: ".99%", 
+  {
+    value: 2,
+    suffix: "%",
+    prefix: "~",
+    label: "Worst-case drawdown",
+    sublabel: "bounded by exposure caps",
+  },
+  {
+    value: 15,
+    suffix: "%",
     prefix: "",
-    label: "Availability",
-    sublabel: "across all regions",
-  },
-  { 
-    value: 340, 
-    suffix: "ms", 
-    prefix: "<",
-    label: "Average execution",
-    sublabel: "p99 latency",
+    label: "Performance fee",
+    sublabel: "high-water-marked",
   },
 ];
 
@@ -259,9 +259,9 @@ export function MetricsSection() {
             <h2 className={`text-6xl md:text-7xl lg:text-[140px] font-display tracking-tight leading-[0.95] transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              Real-time
+              Proven
               <br />
-              <span className="text-muted-foreground">agent metrics.</span>
+              <span className="text-muted-foreground">on testnet.</span>
             </h2>
           </div>
         </div>
@@ -271,7 +271,7 @@ export function MetricsSection() {
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
           <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/real-time-graph-INFmn3u0MlUwvNPynoIhwxtPaPjxM5.png"
+            src="/images/real-time-graph.png"
             alt=""
             aria-hidden="true"
             className="w-full h-auto object-cover"
@@ -328,11 +328,11 @@ export function MetricsSection() {
         <div className={`mt-16 pt-8 border-t border-foreground/10 flex flex-wrap items-center gap-x-12 gap-y-4 text-sm font-mono text-muted-foreground transition-all duration-1000 delay-500 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          <span>OpenAI GPT-4 Turbo</span>
-          <span>Anthropic Claude 3</span>
-          <span>Mistral Large</span>
-          <span>Llama 3</span>
-          <span className="text-foreground">+12 more models</span>
+          <span>Live on Sui testnet</span>
+          <span>Redeem keeper live</span>
+          <span>Pricing match ~1e-5</span>
+          <span>No management fee</span>
+          <span className="text-foreground">85% kept by depositors</span>
         </div>
       </div>
     </section>

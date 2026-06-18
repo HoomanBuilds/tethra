@@ -1,36 +1,36 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Our agents handle 80% of our customer support tickets autonomously. The ROI was immediate.",
-    author: "Sarah Chen",
-    role: "CTO",
-    company: "Meridian Labs",
-    metric: { value: "80%", label: "Ticket resolution" },
+    quote: "Depositors keep 85% of realized profit. The fee is high-water-marked, so we only earn on new gains.",
+    author: "Fee model",
+    role: "Honest by design",
+    company: "Fee model",
+    metric: { value: "85%", label: "You keep" },
   },
   {
-    quote: "We deployed research agents that work 24/7. They surface insights we'd never find manually.",
-    author: "Marcus Webb",
-    role: "Head of Research",
-    company: "Flux Systems",
-    metric: { value: "10x", label: "Research output" },
+    quote: "The strategy was replayed across real BTC crash regimes. Exposure caps held; drawdown stayed bounded.",
+    author: "Simulation result",
+    role: "Backtest on real data",
+    company: "Simulation",
+    metric: { value: "0", label: "Cap breaches" },
   },
   {
-    quote: "The multi-agent orchestration is incredible. Complex workflows that took weeks now run in hours.",
-    author: "Elena Rodriguez",
-    role: "VP Engineering",
-    company: "Beacon AI",
-    metric: { value: "40x", label: "Faster workflows" },
+    quote: "The SVI pricing engine was validated against reference outputs to roughly 1e-5 across the surface.",
+    author: "Validation",
+    role: "SVI pricing engine",
+    company: "Validation",
+    metric: { value: "1e-5", label: "Pricing error" },
   },
   {
-    quote: "Security was our biggest concern. The sandboxing and audit trails gave us full confidence.",
-    author: "James Liu",
-    role: "CISO",
-    company: "Prism Analytics",
-    metric: { value: "0", label: "Security incidents" },
+    quote: "Principal stays in a trustless on-chain vault. A permissionless keeper redeems settled positions.",
+    author: "Design principle",
+    role: "Trustless custody",
+    company: "Design",
+    metric: { value: "100%", label: "On-chain principal" },
   },
 ];
 
@@ -82,9 +82,9 @@ export function TestimonialsSection() {
       {/* ASCII background pattern */}
       <div className="absolute inset-0 font-mono text-[10px] text-background/[0.02] leading-tight overflow-hidden whitespace-pre select-none">
         {Array.from({ length: 60 }, (_, i) => 
-          Array.from({ length: 100 }, () => 
-            Math.random() > 0.7 ? '"' : ' '
-          ).join("")
+          Array.from({ length: 100 }, (_, j) => { 
+            const n = Math.sin(i * 12.9898 + j * 78.233) * 43758.5453; return n - Math.floor(n) > 0.7 ? '"' : ' ';
+          }).join("")
         ).join("\n")}
       </div>
 
@@ -94,13 +94,13 @@ export function TestimonialsSection() {
           <div>
             <span className="inline-flex items-center gap-3 text-sm font-mono text-background/40 mb-4">
               <span className="w-12 h-px bg-background/20" />
-              Testimonials
+              How it works
             </span>
             <h2 className={`text-4xl lg:text-5xl font-display transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}>
-              Trusted by teams
-              <span className="text-background/40"> worldwide.</span>
+              What the design
+              <span className="text-background/40"> guarantees.</span>
             </h2>
           </div>
           
@@ -110,13 +110,13 @@ export function TestimonialsSection() {
               onClick={goPrev}
               className="p-4 border border-background/20 hover:bg-background/10 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={goNext}
               className="p-4 border border-background/20 hover:bg-background/10 transition-colors"
             >
-              <ArrowRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -191,7 +191,7 @@ export function TestimonialsSection() {
             {/* Company list */}
             <div className="mt-4 pt-6 border-t border-background/10">
               <span className="text-xs font-mono text-background/30 uppercase tracking-widest block mb-4">
-                Featured companies
+Key principles
               </span>
               <div className="flex flex-wrap gap-3">
                 {testimonials.map((t, idx) => (

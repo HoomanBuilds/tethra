@@ -5,27 +5,27 @@ import { useEffect, useRef, useState } from "react";
 const features = [
   {
     number: "01",
-    title: "Autonomous Execution",
-    description: "Deploy AI agents that work independently. They analyze, decide, and execute complex multi-step tasks without human intervention.",
-    stats: { value: "99.7%", label: "task completion" },
+    title: "One-Deposit Vault",
+    description: "Deposit dUSDC once and you're done. The vault supplies PLP liquidity to DeepBook Predict for you. No active management required.",
+    stats: { value: "1", label: "deposit to start" },
   },
   {
     number: "02",
-    title: "Distributed Computing",
-    description: "Offload compute-heavy tasks to our global network. Your agents run on optimized infrastructure across 50+ regions worldwide.",
-    stats: { value: "50+", label: "global regions" },
+    title: "Auto-Compounding Yield",
+    description: "Settled returns are continuously redeployed into PLP liquidity. Your position grows from compounding without any manual action.",
+    stats: { value: "24/7", label: "compounding" },
   },
   {
     number: "03",
-    title: "Multi-Agent Orchestration",
-    description: "Coordinate teams of specialized agents. They communicate, delegate, and collaborate to solve complex problems together.",
-    stats: { value: "1000x", label: "parallel execution" },
+    title: "Conservative Exposure Caps",
+    description: "Strict per-market caps and tenor limits bound the vault's risk. Defined-range positions are designed to limit drawdown.",
+    stats: { value: "15%", label: "high-water fee" },
   },
   {
     number: "04",
-    title: "Secure Sandboxing",
-    description: "Each agent runs in isolated environments. Full audit trails, encrypted execution, and zero data leakage between tasks.",
-    stats: { value: "0", label: "data breaches" },
+    title: "Validated SVI Pricing",
+    description: "Each position is priced with an SVI model matched against the protocol on-chain. Independent valuation keeps share prices honest.",
+    stats: { value: "~1e-5", label: "pricing error" },
   },
 ];
 
@@ -165,16 +165,16 @@ export function FeaturesSection() {
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 }`}
               >
-                Intelligent
+                Liquidity
                 <br />
-                <span className="text-muted-foreground">workers.</span>
+                <span className="text-muted-foreground">on rails.</span>
               </h2>
             </div>
             <div className="lg:col-span-5 lg:pb-4">
               <p className={`text-xl text-muted-foreground leading-relaxed transition-all duration-1000 delay-200 ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}>
-                Deploy autonomous AI agents that execute complex tasks across distributed infrastructure. No supervision required.
+                Deposit dUSDC once and the vault supplies PLP liquidity to DeepBook Predict with conservative caps. No active management.
               </p>
             </div>
           </div>
@@ -210,7 +210,7 @@ export function FeaturesSection() {
             {/* Right: mirrored image, full height */}
             <div className="hidden lg:block relative w-[42%] shrink-0 overflow-hidden">
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2812%29-ng3RrNnsPMJ5CrtOjcPTmhHg01W11q.png"
+                src="/images/upscaled-12.png"
                 alt=""
                 aria-hidden="true"
                 className="absolute inset-0 w-full h-full object-cover object-center"

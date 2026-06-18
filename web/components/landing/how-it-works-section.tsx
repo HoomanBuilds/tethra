@@ -5,39 +5,39 @@ import { useEffect, useRef, useState } from "react";
 const steps = [
   {
     number: "01",
-    title: "Define",
-    subtitle: "your agent",
-    description: "Describe what your agent should do. Set its capabilities, constraints, and goals in natural language or code.",
-    code: `const researcher = new Agent({
-  role: 'Research Analyst',
-  capabilities: ['web', 'docs', 'api'],
-  memory: true,
-  autonomy: 'full'
+    title: "Deposit",
+    subtitle: "dUSDC once",
+    description: "Send dUSDC to the vault a single time. You receive shares; no further action or active management is required.",
+    code: `const vault = new Vault({
+  asset: 'dUSDC',
+  action: 'deposit',
+  amount: true,
+  shares: 'minted'
 })`,
   },
   {
     number: "02",
-    title: "Assign",
-    subtitle: "the task",
-    description: "Give your agent a mission. It breaks down complex tasks into steps and executes them autonomously.",
-    code: `await researcher.execute({
-  task: 'Analyze competitor pricing',
-  sources: ['public-data', 'news'],
-  output: 'structured-report',
-  deadline: '2h'
+    title: "Supply",
+    subtitle: "PLP liquidity",
+    description: "The vault supplies PLP liquidity to DeepBook Predict, auto-compounds returns, and caps exposure to limit drawdown.",
+    code: `await vault.supply({
+  venue: 'DeepBook Predict',
+  pool: ['plp', 'btc-markets'],
+  policy: 'conservative-caps',
+  compound: 'auto'
 })`,
   },
   {
     number: "03",
-    title: "Monitor",
-    subtitle: "& scale",
-    description: "Track progress in real-time. Spin up more agents as needed. Pay only for compute used.",
-    code: `optimus.dashboard({
-  agents: [researcher],
-  metrics: ['tasks', 'latency', 'cost'],
-  alerts: true
+    title: "Redeem",
+    subtitle: "& withdraw",
+    description: "A permissionless keeper redeems settled positions. Withdraw any time at your share price, net of fee.",
+    code: `keeper.redeem({
+  vault: [settled],
+  fields: ['shares', 'price', 'fee'],
+  netOfFee: true
 })
-// 847 tasks completed today`,
+// 15% high-water-mark fee`,
   },
 ];
 
@@ -88,9 +88,9 @@ export function HowItWorksSection() {
             <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.85] transition-all duration-1000 delay-100 ${
               isVisible ? "translate-y-0 opacity-100" : "translate-y-16 opacity-0"
             }`}>
-              <span className="block">Define.</span>
-              <span className="block text-white/30">Deploy.</span>
-              <span className="block text-white/10">Scale.</span>
+              <span className="block">Deposit.</span>
+              <span className="block text-white/30">Supply.</span>
+              <span className="block text-white/10">Earn.</span>
             </h2>
           </div>
 
@@ -99,7 +99,7 @@ export function HowItWorksSection() {
             isVisible ? "opacity-100" : "opacity-0"
           }`}>
             <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/tree-uAia6REvB137CQyHFCf0za3O6h2zKO.png"
+              src="/images/tree.png"
               alt=""
               aria-hidden="true"
               className="absolute bottom-0 left-0 w-full h-full object-contain object-bottom"

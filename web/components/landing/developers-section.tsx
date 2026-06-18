@@ -3,27 +3,27 @@
 import { useState, useEffect, useRef } from "react";
 
 const features = [
-  { 
-    title: "TypeScript native", 
-    description: "Full type safety for agent configs and responses."
+  {
+    title: "Move + TypeScript",
+    description: "On-chain vault with a typed keeper and tooling."
   },
-  { 
-    title: "Streaming results", 
-    description: "Watch your agents think and act in real-time."
+  {
+    title: "Reproducible backtests",
+    description: "Run the strategy on real historical BTC data."
   },
-  { 
-    title: "Multi-model support", 
-    description: "OpenAI, Anthropic, Mistral, or bring your own."
+  {
+    title: "SVI pricing engine",
+    description: "Validated to ~1e-5 against reference outputs."
   },
-  { 
-    title: "Local debugging", 
-    description: "Test agents locally before deploying to cloud."
+  {
+    title: "Public repository",
+    description: "Read, verify, and run everything yourself."
   },
 ];
 
 export function DevelopersSection() {
   const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLSection>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -47,7 +47,7 @@ export function DevelopersSection() {
         }`}
       >
         <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2813%29-OQ2DiR3ElVsUg8kTvTL1kC5A3Q6maM.png"
+          src="/images/upscaled-13.png"
           alt=""
           aria-hidden="true"
           className="w-full h-full object-cover object-left-top"
@@ -68,12 +68,12 @@ export function DevelopersSection() {
         >
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
             <span className="w-8 h-px bg-foreground/30" />
-            Developer SDK
+            Open source
           </span>
           <h2 className="text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9]">
-            Code your agents.
+            Read the code.
             <br />
-            <span className="text-muted-foreground">Or let them code.</span>
+            <span className="text-muted-foreground">Verify it yourself.</span>
           </h2>
         </div>
 
@@ -84,8 +84,8 @@ export function DevelopersSection() {
           }`}
         >
           <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-md">
-            A powerful SDK for building, deploying, and orchestrating AI agents. 
-            Define behaviors in code or natural language.
+            A Move smart contract with a TypeScript keeper and tooling.
+            Every claim is backed by code and reproducible backtests.
           </p>
           <div className="grid grid-cols-2 gap-6">
             {features.map((feature, index) => (
