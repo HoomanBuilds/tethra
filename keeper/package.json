@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dry": "tsx src/keeper.ts --dry",
-    "start": "tsx src/keeper.ts"
+    "start": "tsx src/keeper.ts",
+    "roundtrip": "tsx src/roundtrip.ts"
   },
   "dependencies": {
     "@mysten/sui": "^1.30.0"
