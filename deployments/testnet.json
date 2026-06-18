@@ -1,0 +1,20 @@
+{
+  "network": "testnet",
+  "chainId": "4c78adac",
+  "publishDigest": "14CrPWSdUZBJtBCSYWbZn23XZR7YQ1kyvZzQjFB9MYUY",
+  "plpVault": {
+    "package": "0xc5af7e1c3bf297aa38acc3804b3935cdb440e8955c4eb3d4ec153c21b4890db8",
+    "vault": "0x5ed0b38cd386fd9e7503dc4bea482087e24c3e86c0599baa196b6be0fecf9f86",
+    "adminCap": "0x841c5d27edcbba44407929df9e5dd2625dd7bf182418bfa3eca24ee57542296d",
+    "upgradeCap": "0xa9160783521adb67e68a1273e0f69b318d0e064e837c07563b6be1b77687dcfd",
+    "shareType": "0xc5af7e1c3bf297aa38acc3804b3935cdb440e8955c4eb3d4ec153c21b4890db8::vault::VAULT"
+  },
+  "linkedProtocol": {
+    "predictPackage": "0xf5ea2b3749c65d6e56507cc35388719aadb28f9cab873696a2f8687f5c785138",
+    "predictObject": "0xc8736204d12f0a7277c86388a68bf8a194b0a14c5538ad13f22cbd8e2a38028a",
+    "dusdcType": "0xe95040085976bfd54a1a07225cd46c8a2b4e8e2b6732f140a0fc49850ba73e1a::dusdc::DUSDC",
+    "deepbookPackage": "0xfb28c4cbc6865bd1c897d26aecbe1f8792d1509a20ffec692c800660cbec6982",
+    "tokenPackage": "0x36dbef866a1d62bf7328989a10fb2f07d769f4ee587c0de4a0a256e57e0a58a8"
+  },
+  "note": "Built from contracts/ with deepbookv3 deps pinned at rev 1159d79af33c70e09e406310e1d8f067832ede9d. To redeploy, set `published-at` on the direct deps (predict, dusdc) to the addresses above so the build links to the live protocol instead of republishing. Deposit/withdraw round-trip pending DUSDC test tokens."
+}

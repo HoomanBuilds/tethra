@@ -21,6 +21,8 @@ cd contracts
 sui move test
 ```
 
+**Deployed on Sui testnet** (`deployments/testnet.json`): package `0xc5af7e1c3bf297aa38acc3804b3935cdb440e8955c4eb3d4ec153c21b4890db8`, shared `Vault` `0x5ed0b38cd386fd9e7503dc4bea482087e24c3e86c0599baa196b6be0fecf9f86`, linking the live DeepBook Predict protocol (`0xf5ea…5138`). Deposit/withdraw round-trip pending DUSDC test tokens.
+
 ## Reproduce the analysis
 
 ```
