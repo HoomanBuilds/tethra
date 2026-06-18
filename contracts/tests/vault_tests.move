@@ -27,3 +27,15 @@ fun first_deposit_attack_is_bounded() {
     let victim = vault::preview_deposit(1, attacker, 10_000_000);
     assert!(victim > 9_000_000, 0);
 }
+
+#[test]
+fun fee_only_on_profit() {
+    assert!(vault::perf_fee(110_000_000, 100_000_000, 1_500) == 1_500_000, 0);
+    assert!(vault::perf_fee(100_000_000, 100_000_000, 1_500) == 0, 1);
+    assert!(vault::perf_fee(90_000_000, 100_000_000, 1_500) == 0, 2);
+}
+
+#[test]
+fun fee_zero_when_disabled() {
+    assert!(vault::perf_fee(200_000_000, 100_000_000, 0) == 0, 0);
+}
