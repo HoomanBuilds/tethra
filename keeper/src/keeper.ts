@@ -2,6 +2,7 @@ import { openSettledPositions, type OpenPosition } from './indexer.ts';
 import { POLL_MS, MAX_REDEEMS_PER_TICK } from './config.ts';
 
 const DRY = process.argv.includes('--dry');
+const ONCE = process.argv.includes('--once');
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const usd = (raw: number) => `$${(raw / 1e6).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
 const price = (raw: number) => `$${(raw / 1e9).toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
@@ -27,7 +28,7 @@ async function tick(): Promise<void> {
     try {
       const digest = await redeem(kp, p);
       done++;
-      console.log(`  redeemed ${p.oracleId.slice(0, 10)}… ${p.isUp ? 'UP' : 'DN'} ${price(p.strike)} qty ${usd(p.qty)} → ${digest}`);
+      console.log(`  redeemed ${p.isUp ? 'UP' : 'DN'} ${price(p.strike)} qty ${usd(p.qty)} → ${digest}`);
     } catch (e) {
       console.warn(`  skip ${p.oracleId.slice(0, 10)}…: ${(e as Error).message}`);
     }
@@ -35,7 +36,7 @@ async function tick(): Promise<void> {
   console.log(`  redeemed ${done}/${targets.length} this tick`);
 }
 
-if (DRY) {
+if (DRY || ONCE) {
   await tick();
 } else {
   for (;;) {
