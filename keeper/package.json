@@ -1,0 +1,17 @@
+{
+  "name": "plp-redeem-keeper",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dry": "tsx src/keeper.ts --dry",
+    "start": "tsx src/keeper.ts"
+  },
+  "dependencies": {
+    "@mysten/sui": "^1.30.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}
