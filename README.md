@@ -4,12 +4,22 @@ A trustless, fee-earning, **risk-managed PLP vault** on DeepBook Predict. One de
 
 Positioning is honest and evidence-based: this is the safe, automated way to provide PLP and a cold-start solution for the protocol — **not** a high-yield alpha fund. The backtest shows the house edge is thin and tail-dominated, spot delta-hedging of binaries is counterproductive, and the real tail is a rally (not a crash); risk is controlled by exposure limits, and the business scales with trading volume.
 
-## Layout
+## Structure
 
-- `docs/` — plan, verification report, strategy/economics spec, backtest results (local)
-- `strategy/` — TypeScript: validated SVI pricing engine + backtests, risk overlays, hedge sim, economics, stress test
-- `packages/vault/` — Move vault contract (deposit/withdraw + shares; fee/caps in progress)
-- `keeper/`, `frontend/` — redeem keeper and risk terminal (planned)
+- `contracts/` — Move vault package (deposit/withdraw + shares; fee/caps in progress)
+- `strategy/` — TypeScript: validated SVI pricing engine, backtests, risk overlays, hedge sim, economics, stress test
+- `web/` — frontend dApp (planned)
+- `keeper/` — redeem keeper bot (planned)
+- `data/` — testnet datasets + BTC price history
+
+The Move contract pulls DeepBook Predict via a git dependency (no vendored source).
+
+## Contract
+
+```
+cd contracts
+sui move test
+```
 
 ## Reproduce the analysis
 
@@ -22,13 +32,4 @@ npm run stress      # BTC crash-regime stress test
 npm run econ        # fee economics and yield scaling
 ```
 
-Base datasets are committed under `data/`. Per-oracle SVI/price histories (for `validate` and `hedge`) are pulled from the testnet indexer and are gitignored.
-
-## Vault contract
-
-```
-cd packages/vault
-sui move test
-```
-
-Pricing engine is validated against real on-chain `ask` to a median error of 1e-5 (`strategy/src/svi/validate.ts`).
+Base datasets are committed under `data/`. Per-oracle SVI/price histories (for `validate` and `hedge`) are pulled from the testnet indexer and are gitignored. Pricing engine is validated against real on-chain `ask` to a median error of 1e-5.
