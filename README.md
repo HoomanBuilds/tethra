@@ -1,15 +1,15 @@
-# PLP Vault — DeepBook Predict (Sui Overflow 2026)
+# Tethra — DeepBook Predict liquidity vault (Sui Overflow 2026)
 
-A trustless, fee-earning, **risk-managed PLP vault** on DeepBook Predict. One deposit: the vault supplies PLP liquidity to underwrite BTC binary markets, auto-compounds, caps exposure to limit drawdown, and a keeper redeems settled positions. Depositors earn net-of-fee yield; the vault takes a high-water-marked performance fee.
+**Tethra** is a trustless, fee-earning, **risk-managed PLP vault** on DeepBook Predict. One deposit: the vault supplies PLP liquidity to underwrite BTC binary markets, auto-compounds, caps exposure to limit drawdown, and a keeper redeems settled positions. Depositors earn net-of-fee yield; the vault takes a high-water-marked performance fee.
 
 Positioning is honest and evidence-based: this is the safe, automated way to provide PLP and a cold-start solution for the protocol — **not** a high-yield alpha fund. The backtest shows the house edge is thin and tail-dominated, spot delta-hedging of binaries is counterproductive, and the real tail is a rally (not a crash); risk is controlled by exposure limits, and the business scales with trading volume.
 
 ## Structure
 
-- `contracts/` — Move vault package (deposit/withdraw + shares; fee/caps in progress)
+- `contracts/` — Move vault package (deposit/withdraw, shares, performance fee, exposure cap) — deployed to testnet
 - `strategy/` — TypeScript: validated SVI pricing engine, backtests, risk overlays, hedge sim, economics, stress test
-- `web/` — frontend dApp (planned)
-- `keeper/` — redeem keeper bot (planned)
+- `web/` — Tethra landing site (Next.js, npm)
+- `keeper/` — redeem keeper bot (live on testnet)
 - `data/` — testnet datasets + BTC price history
 
 The Move contract pulls DeepBook Predict via a git dependency (no vendored source).
