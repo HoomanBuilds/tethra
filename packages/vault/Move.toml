@@ -1,0 +1,11 @@
+[package]
+name = "plp_vault"
+edition = "2024.beta"
+version = "0.0.1"
+
+[dependencies]
+deepbook_predict = { local = "../../vendor/deepbookv3/packages/predict" }
+dusdc = { local = "../../vendor/deepbookv3/packages/dusdc" }
+
+[addresses]
+plp_vault = "0x0"
