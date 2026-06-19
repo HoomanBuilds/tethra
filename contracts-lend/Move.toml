@@ -1,0 +1,18 @@
+[package]
+name = "tethra_lend"
+edition = "2024"
+version = "0.0.1"
+
+[dependencies]
+deepbook_margin = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/deepbook_margin", rev = "daa5a9514908968f11be1d0388f673e0ee1a5059" }
+deepbook = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/deepbook", rev = "daa5a9514908968f11be1d0388f673e0ee1a5059" }
+token = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/token", rev = "190ab8fd15bca03b20965ab2a7b6911fcdf2bf1f", override = true }
+Pyth = { git = "https://github.com/pyth-network/pyth-crosschain.git", subdir = "target_chains/sui/contracts", rev = "3bd1262dcba9518a6901aa6a15f04072799bfb37" }
+Wormhole = { git = "https://github.com/wormhole-foundation/wormhole.git", subdir = "sui/wormhole", rev = "b71be5cbb9537c4aac8e23e74371affa3825efcd" }
+
+[addresses]
+tethra_lend = "0x0"
+
+[dev-addresses]
+
+[dev-dependencies]
