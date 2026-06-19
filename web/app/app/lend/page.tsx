@@ -18,7 +18,6 @@ import {
   useLendVaultState,
   useMarginPool,
   useLendShareBalance,
-  LEND_SHARE_DECIMALS,
 } from "@/lib/lend";
 import { fromUnits, formatNumber, formatPercent } from "@/lib/format";
 import { explorerObject } from "@/lib/config";
@@ -46,9 +45,7 @@ function computeApy(pool: {
   const util = Number(pool.totalBorrow) / Number(pool.totalSupply);
   let borrowRate: number;
   if (util <= pool.optimalUtilization) {
-    borrowRate =
-      pool.baseRate +
-      pool.baseSlope * (util / pool.optimalUtilization);
+    borrowRate = pool.baseRate + pool.baseSlope * (util / pool.optimalUtilization);
   } else {
     borrowRate =
       pool.baseRate +
@@ -109,6 +106,30 @@ const HOW_IT_WORKS = [
   },
 ];
 
+function PositionStat({
+  label,
+  value,
+  sub,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <span className="block text-xs font-mono text-muted-foreground uppercase tracking-wider">
+        {label}
+      </span>
+      <span className="mt-2 block text-3xl lg:text-4xl font-display tracking-tight leading-none">
+        {value}
+      </span>
+      <span className="mt-2 block text-sm text-muted-foreground">{sub}</span>
+    </div>
+  );
+}
+
 export default function LendPage() {
   const [assetKey, setAssetKey] = useState<"sui" | "dusdc">("sui");
   const asset: LendAsset = LEND_ASSETS[assetKey];
@@ -122,10 +143,16 @@ export default function LendPage() {
 
   const { util, supplyApy } = pool ? computeApy(pool) : { util: 0, supplyApy: 0 };
 
-  const yourShares = fromUnits(shareBalance, LEND_SHARE_DECIMALS);
-  const totalSharesNum = vaultState ? Number(vaultState.totalShares) : 0;
+  // Share coin decimals equal the asset decimals (tlSUI 9dp, tldUSDC 6dp).
+  const yourShares = fromUnits(shareBalance, asset.decimals);
+  const totalShares = vaultState ? vaultState.totalShares : 0n;
   const shareFraction =
-    totalSharesNum > 0 ? Number(shareBalance) / totalSharesNum : 0;
+    totalShares > 0n ? Number(shareBalance) / Number(totalShares) : 0;
+  const principalRaw =
+    vaultState && totalShares > 0n
+      ? (vaultState.costBasis * shareBalance) / totalShares
+      : 0n;
+  const yourPrincipal = fromUnits(principalRaw, asset.decimals);
 
   return (
     <div className="max-w-[1400px] mx-auto">
@@ -178,85 +205,77 @@ export default function LendPage() {
           <LendDepositWithdraw asset={asset} />
         </div>
 
-        <div className="flex flex-col gap-6">
-          <Panel className="p-6 lg:p-8 flex flex-col">
-            <Tag>Your position</Tag>
-            {account ? (
-              <div className="mt-6 flex flex-col gap-6 flex-1">
-                <div>
-                  <span className="block text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                    Your shares
-                  </span>
-                  <span className="mt-2 block text-3xl lg:text-4xl font-display tracking-tight leading-none">
-                    {formatNumber(yourShares)}
-                  </span>
-                  <span className="mt-2 block text-sm text-muted-foreground">
-                    tl{asset.symbol} held
-                  </span>
-                </div>
-                <div>
-                  <span className="block text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                    Share of vault
-                  </span>
-                  <span className="mt-2 block text-3xl lg:text-4xl font-display tracking-tight leading-none">
-                    {formatPercent(shareFraction)}
-                  </span>
-                  <span className="mt-2 block text-sm text-muted-foreground">
-                    Of total tl{asset.symbol} outstanding
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="mt-6 flex-1">
-                <EmptyState
-                  title="Connect to view your position"
-                  description="Connect a Sui wallet on testnet to see your shares and position."
-                  image="/images/world.png"
-                  action={
-                    <ConnectWallet
-                      className="rounded-full bg-foreground text-background hover:bg-foreground/90 h-11 px-6"
-                      label="Connect wallet"
-                      showAccount={false}
-                    />
-                  }
-                />
-              </div>
-            )}
-          </Panel>
-
-          <Panel className="relative overflow-hidden p-6 lg:p-8">
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-end">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/images/whale.png"
-                alt=""
-                aria-hidden="true"
-                className="h-3/4 w-3/4 object-contain object-right opacity-[0.12]"
+        <Panel className="p-6 lg:p-8">
+          <Tag>Your position</Tag>
+          {account ? (
+            <div className="mt-6 grid gap-6 sm:grid-cols-2">
+              <PositionStat
+                label="Your shares"
+                value={formatNumber(yourShares)}
+                sub={`tl${asset.symbol} held`}
+              />
+              <PositionStat
+                label="Ownership"
+                value={formatPercent(shareFraction)}
+                sub={`of total tl${asset.symbol}`}
+              />
+              <PositionStat
+                label="Your principal"
+                value={`${formatNumber(yourPrincipal)} ${asset.symbol}`}
+                sub="cost basis of your deposits"
+                className="sm:col-span-2"
               />
             </div>
-            <div className="relative z-10">
-              <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                How it works
-              </span>
-              <div className="mt-6 flex flex-col gap-6">
-                {HOW_IT_WORKS.map((point) => (
-                  <div key={point.title} className="flex items-start gap-4">
-                    <div className="pt-2">
-                      <AccentDot />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">{point.title}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground leading-relaxed max-w-sm">
-                        {point.detail}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          ) : (
+            <div className="mt-6">
+              <EmptyState
+                title="Connect to view your position"
+                description="Connect a Sui wallet on testnet to see your shares and position."
+                image="/images/world.png"
+                action={
+                  <ConnectWallet
+                    className="rounded-full bg-foreground text-background hover:bg-foreground/90 h-11 px-6"
+                    label="Connect wallet"
+                    showAccount={false}
+                  />
+                }
+              />
             </div>
-          </Panel>
-        </div>
+          )}
+        </Panel>
       </div>
+
+      <Panel className="relative overflow-hidden p-6 lg:p-8 mt-6">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-end">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/whale.png"
+            alt=""
+            aria-hidden="true"
+            className="h-2/3 w-1/3 object-contain object-right opacity-[0.10]"
+          />
+        </div>
+        <div className="relative z-10">
+          <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
+            How it works
+          </span>
+          <div className="mt-6 grid gap-6 lg:grid-cols-3">
+            {HOW_IT_WORKS.map((point) => (
+              <div key={point.title} className="flex items-start gap-4">
+                <div className="pt-2">
+                  <AccentDot />
+                </div>
+                <div>
+                  <h3 className="font-medium">{point.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                    {point.detail}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Panel>
 
       <Panel className="p-6 lg:p-8 mt-6 overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 items-center">

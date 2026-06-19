@@ -19,7 +19,6 @@ import {
   useLendShareBalance,
   useLendShares,
   GAS_RESERVE,
-  LEND_SHARE_DECIMALS,
 } from "@/lib/lend";
 import {
   buildLendDepositTx,
@@ -182,7 +181,7 @@ function DepositTab({ asset }: { asset: LendAsset }) {
           {previewLoading ? (
             <Skeleton className="h-7 w-32" />
           ) : preview?.ok ? (
-            `${formatNumber(fromUnits(preview.shares, LEND_SHARE_DECIMALS))} tl${asset.symbol}`
+            `${formatNumber(fromUnits(preview.shares, asset.decimals))} tl${asset.symbol}`
           ) : (
             <span className="text-muted-foreground">0 tl{asset.symbol}</span>
           )}
@@ -266,7 +265,7 @@ function WithdrawTab({ asset }: { asset: LendAsset }) {
 
   const sharesRaw = useMemo(() => {
     try {
-      const r = parseUnits(amount, LEND_SHARE_DECIMALS);
+      const r = parseUnits(amount, asset.decimals);
       return r > shareBalance ? shareBalance : r;
     } catch {
       return 0n;
@@ -277,14 +276,14 @@ function WithdrawTab({ asset }: { asset: LendAsset }) {
 
   function setPct(pct: number) {
     const target = (shareBalance * BigInt(pct)) / 100n;
-    setAmount(String(fromUnits(target, LEND_SHARE_DECIMALS)));
+    setAmount(String(fromUnits(target, asset.decimals)));
   }
 
   useEffect(() => {
     let cancelled = false;
     const raw = (() => {
       try {
-        const r = parseUnits(debounced, LEND_SHARE_DECIMALS);
+        const r = parseUnits(debounced, asset.decimals);
         return r > shareBalance ? shareBalance : r;
       } catch {
         return 0n;
@@ -343,7 +342,7 @@ function WithdrawTab({ asset }: { asset: LendAsset }) {
         <div className="flex items-baseline justify-between">
           <FieldLabel>Amount, tl{asset.symbol} shares</FieldLabel>
           <span className="text-xs font-mono text-muted-foreground">
-            Shares {formatNumber(fromUnits(shareBalance, LEND_SHARE_DECIMALS))}
+            Shares {formatNumber(fromUnits(shareBalance, asset.decimals))}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -360,7 +359,7 @@ function WithdrawTab({ asset }: { asset: LendAsset }) {
             size="sm"
             className="border-foreground/15 font-mono text-xs"
             disabled={!hasShares || isSubmitting}
-            onClick={() => setAmount(String(fromUnits(shareBalance, LEND_SHARE_DECIMALS)))}
+            onClick={() => setAmount(String(fromUnits(shareBalance, asset.decimals)))}
           >
             Max
           </Button>
