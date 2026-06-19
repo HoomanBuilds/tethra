@@ -35,9 +35,9 @@ fun init(witness: VAULT, ctx: &mut TxContext) {
     let (treasury, metadata) = coin::create_currency(
         witness,
         9,
-        b"plpVAULT",
-        b"PLP Ladder Vault Share",
-        b"Redeemable share of the PLP Ladder Vault",
+        b"tPLP",
+        b"Tethra Predict Vault Share",
+        b"Redeemable share of the Tethra Predict Vault",
         option::none(),
         ctx,
     );

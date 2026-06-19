@@ -6,6 +6,7 @@ version = "0.0.1"
 [dependencies]
 deepbook_predict = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/predict", rev = "1159d79af33c70e09e406310e1d8f067832ede9d" }
 dusdc = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/dusdc", rev = "1159d79af33c70e09e406310e1d8f067832ede9d" }
+token = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/token", rev = "5411ef3aa93f7722409b2a85047baa3d4d830c07", override = true }
 
 [addresses]
 plp_vault = "0x0"

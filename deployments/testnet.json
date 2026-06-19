@@ -1,13 +1,13 @@
 {
   "network": "testnet",
   "chainId": "4c78adac",
-  "publishDigest": "14CrPWSdUZBJtBCSYWbZn23XZR7YQ1kyvZzQjFB9MYUY",
+  "publishDigest": "D6spjuqzkrMhjeF6LSUqWeAPJTXyqdcr7jeKDPTbz5ah",
   "plpVault": {
-    "package": "0xc5af7e1c3bf297aa38acc3804b3935cdb440e8955c4eb3d4ec153c21b4890db8",
-    "vault": "0x5ed0b38cd386fd9e7503dc4bea482087e24c3e86c0599baa196b6be0fecf9f86",
-    "adminCap": "0x841c5d27edcbba44407929df9e5dd2625dd7bf182418bfa3eca24ee57542296d",
-    "upgradeCap": "0xa9160783521adb67e68a1273e0f69b318d0e064e837c07563b6be1b77687dcfd",
-    "shareType": "0xc5af7e1c3bf297aa38acc3804b3935cdb440e8955c4eb3d4ec153c21b4890db8::vault::VAULT"
+    "package": "0x2765b4a30258ef4660ec7d24fef8b0b32a700633c6dc1a57a80f988de6bc1d9e",
+    "vault": "0x21528665ba5731f9ffa2a7fe3024f87b77b86660a615118e2e3d1d150299aeb0",
+    "adminCap": "0x3fd3d1552a4f07620c639e65443baf1ac797565863f1b6055cdf6fda698742ef",
+    "upgradeCap": "0x8a41c95ce092c8d34a1e418acae3d20a767c17953e8e722816c85135db9cb12f",
+    "shareType": "0x2765b4a30258ef4660ec7d24fef8b0b32a700633c6dc1a57a80f988de6bc1d9e::vault::VAULT"
   },
   "linkedProtocol": {
     "predictPackage": "0xf5ea2b3749c65d6e56507cc35388719aadb28f9cab873696a2f8687f5c785138",
