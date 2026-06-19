@@ -28,7 +28,7 @@ export interface LendVaultState {
 export interface MarginPoolState {
   totalSupply: bigint;
   totalBorrow: bigint;
-  // All rate fields are 1e18-scaled fixed-point from the contract
+  // All rate fields are 1e9-scaled fixed-point (FLOAT_SCALING) from the contract
   baseRate: number;
   baseSlope: number;
   excessSlope: number;
@@ -105,7 +105,7 @@ export function useSuiMarginPool() {
       const poolCfg =
         config.margin_pool_config?.fields ?? config.margin_pool_config ?? {};
 
-      const SCALE = 1e18;
+      const SCALE = 1e9;
       pool = {
         totalSupply: BigInt(state.total_supply ?? 0),
         totalBorrow: BigInt(state.total_borrow ?? 0),
