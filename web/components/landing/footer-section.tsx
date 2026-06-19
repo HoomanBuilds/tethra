@@ -4,35 +4,18 @@ import { useEffect, useRef } from "react";
 
 const footerLinks = {
   Product: [
-    { name: "Vault features", href: "#features" },
+    { name: "Features", href: "#features" },
     { name: "How it works", href: "#how-it-works" },
     { name: "Fees", href: "#pricing" },
-    { name: "DeepBook Predict", href: "#integrations" },
-  ],
-  Developers: [
-    { name: "Documentation", href: "#developers" },
-    { name: "Keeper bot", href: "#" },
-    { name: "Move contracts", href: "#developers" },
-    { name: "Status", href: "#" },
-  ],
-  Company: [
-    { name: "About", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Careers", href: "#", badge: "Hiring" },
-    { name: "Contact", href: "#" },
-  ],
-  Legal: [
-    { name: "Privacy", href: "#" },
-    { name: "Terms", href: "#" },
     { name: "Risk", href: "#security" },
   ],
+  App: [
+    { name: "Open app", href: "/app" },
+    { name: "Predict vault", href: "/app/deposit" },
+    { name: "Lend vault", href: "/app/lend" },
+    { name: "DeepBook", href: "#integrations" },
+  ],
 };
-
-const socialLinks = [
-  { name: "Twitter", href: "#" },
-  { name: "GitHub", href: "#" },
-  { name: "LinkedIn", href: "#" },
-];
 
 function AnimatedWaveCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -110,7 +93,7 @@ export function FooterSection() {
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Main Footer */}
         <div className="py-16 lg:py-20">
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-12 lg:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 lg:gap-8">
             {/* Brand Column */}
             <div className="col-span-2">
               <a href="#" className="inline-flex items-center gap-2 mb-6">
@@ -119,21 +102,13 @@ export function FooterSection() {
               </a>
 
               <p className="text-white/50 leading-relaxed mb-8 max-w-xs text-sm">
-                The safe, automated way to provide liquidity on DeepBook Predict. Deposit once, earn net-of-fee yield.
+                The safe, automated way to supply liquidity on DeepBook. Deposit once, earn net-of-fee yield from Predict and Margin.
               </p>
 
-              {/* Social Links */}
-              <div className="flex gap-6">
-                {socialLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    className="text-sm text-white/40 hover:text-white transition-colors flex items-center gap-1 group"
-                  >
-                    {link.name}
-                  </a>
-                ))}
-              </div>
+              <span className="inline-flex items-center gap-2 text-sm text-white/40">
+                <span className="w-2 h-2 rounded-full bg-[#eca8d6]" />
+                Live on Sui testnet
+              </span>
             </div>
 
             {/* Link Columns */}
@@ -148,11 +123,6 @@ export function FooterSection() {
                         className="text-sm text-white/40 hover:text-white transition-colors inline-flex items-center gap-2"
                       >
                         {link.name}
-                        {"badge" in link && link.badge && (
-                          <span className="text-xs px-2 py-0.5 bg-white text-black rounded-full">
-                            {link.badge}
-                          </span>
-                        )}
                       </a>
                     </li>
                   ))}
@@ -165,7 +135,7 @@ export function FooterSection() {
         {/* Bottom Bar */}
         <div className="py-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-white/30">
-            &copy; 2025 Tethra. All rights reserved.
+            &copy; 2026 Tethra. All rights reserved.
           </p>
 
           <div className="flex items-center gap-4 text-sm text-white/30">

@@ -67,9 +67,6 @@ export function Navigation() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Link href="/app" className={`transition-all duration-500 ${isScrolled ? "text-xs text-foreground/70 hover:text-foreground" : "text-sm text-white/70 hover:text-white"}`}>
-              Docs
-            </Link>
             <Button
               asChild
               size="sm"
@@ -126,21 +123,12 @@ export function Navigation() {
           
           {/* Bottom CTAs */}
           <div className={`flex gap-4 pt-8 border-t border-foreground/10 transition-all duration-500 ${
-            isMobileMenuOpen 
-              ? "opacity-100 translate-y-0" 
+            isMobileMenuOpen
+              ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4"
           }`}
           style={{ transitionDelay: isMobileMenuOpen ? "300ms" : "0ms" }}
           >
-            <Button
-              asChild
-              variant="outline"
-              className="flex-1 rounded-full h-14 text-base"
-            >
-              <Link href="/app" onClick={() => setIsMobileMenuOpen(false)}>
-                Docs
-              </Link>
-            </Button>
             <Button
               asChild
               className="flex-1 bg-foreground text-background rounded-full h-14 text-base"

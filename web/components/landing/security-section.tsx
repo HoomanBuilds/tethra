@@ -30,7 +30,7 @@ const securityFeatures = [
   },
 ];
 
-const certifications = ["Caps", "Stress-tested", "On-chain", "Audited math"];
+const certifications = ["Caps", "Stress-tested", "On-chain", "Tested math"];
 
 export function SecuritySection() {
   const [isVisible, setIsVisible] = useState(false);
