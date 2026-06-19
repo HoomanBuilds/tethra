@@ -2,21 +2,57 @@
 
 import { useSuiClientQuery } from "@mysten/dapp-kit";
 
-export const LEND_PKG =
-  "0x7e721eef3cd64f8073dd3f31cccc55fe1f8df06dc795abdd13739562d26a841d";
-export const LEND_VAULT_ID =
-  "0x66fbffc2ac715939213fac8ef2cfa2f5aa7180ff72d15c9f7c27c1802fc5c2c3";
-export const LEND_SHARE_TYPE = `${LEND_PKG}::lend_vault::LEND_VAULT`;
-export const SUI_MARGIN_POOL =
-  "0xcdbbe6a72e639b647296788e2e4b1cac5cea4246028ba388ba1332ff9a382eea";
 export const MARGIN_REGISTRY =
   "0x48d7640dfae2c6e9ceeada197a7a1643984b5a24c55a0c6c023dac77e0339f75";
-export const SUI_TYPE = "0x2::sui::SUI";
 
-export const LEND_SUI_DECIMALS = 9;
-export const LEND_SHARE_DECIMALS = 9;
-// 0.1 SUI reserve for gas when depositing SUI (which is also the gas token)
 export const GAS_RESERVE = 100_000_000n;
+
+export const LEND_SHARE_DECIMALS = 9;
+
+export interface LendAsset {
+  key: "sui" | "dusdc";
+  package: string;
+  vault: string;
+  module: string;
+  shareType: string;
+  marginPool: string;
+  assetType: string;
+  decimals: number;
+  symbol: string;
+  isGasToken: boolean;
+}
+
+export const LEND_ASSETS: Record<"sui" | "dusdc", LendAsset> = {
+  sui: {
+    key: "sui",
+    package: "0x7e721eef3cd64f8073dd3f31cccc55fe1f8df06dc795abdd13739562d26a841d",
+    vault: "0x66fbffc2ac715939213fac8ef2cfa2f5aa7180ff72d15c9f7c27c1802fc5c2c3",
+    module: "lend_vault",
+    shareType:
+      "0x7e721eef3cd64f8073dd3f31cccc55fe1f8df06dc795abdd13739562d26a841d::lend_vault::LEND_VAULT",
+    marginPool:
+      "0xcdbbe6a72e639b647296788e2e4b1cac5cea4246028ba388ba1332ff9a382eea",
+    assetType: "0x2::sui::SUI",
+    decimals: 9,
+    symbol: "SUI",
+    isGasToken: true,
+  },
+  dusdc: {
+    key: "dusdc",
+    package: "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93",
+    vault: "0xccc2def235d38953bfaadc8c5420221149c42d131fb4ae148e7a7dd229f24856",
+    module: "lend_vault_dbusdc",
+    shareType:
+      "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93::lend_vault_dbusdc::LEND_VAULT_DBUSDC",
+    marginPool:
+      "0xf08568da93834e1ee04f09902ac7b1e78d3fdf113ab4d2106c7265e95318b14d",
+    assetType:
+      "0xf7152c05930480cd740d7311b5b8b45c6f488e3a53a11c3f74a6fac36a52e0d7::DBUSDC::DBUSDC",
+    decimals: 6,
+    symbol: "dUSDC",
+    isGasToken: false,
+  },
+};
 
 export interface LendVaultState {
   costBasis: bigint;
@@ -28,7 +64,6 @@ export interface LendVaultState {
 export interface MarginPoolState {
   totalSupply: bigint;
   totalBorrow: bigint;
-  // All rate fields are 1e9-scaled fixed-point (FLOAT_SCALING) from the contract
   baseRate: number;
   baseSlope: number;
   excessSlope: number;
@@ -36,10 +71,10 @@ export interface MarginPoolState {
   protocolSpread: number;
 }
 
-export function useLendVaultState() {
+export function useLendVaultState(asset: LendAsset) {
   const q = useSuiClientQuery(
     "getObject",
-    { id: LEND_VAULT_ID, options: { showContent: true } },
+    { id: asset.vault, options: { showContent: true } },
     { refetchInterval: 15_000 },
   );
   const f = (q.data?.data?.content as any)?.fields;
@@ -60,38 +95,38 @@ export function useLendVaultState() {
   return { ...q, state };
 }
 
-export function useSuiBalance(address: string | undefined) {
+export function useAssetBalance(address: string | undefined, asset: LendAsset) {
   const q = useSuiClientQuery(
     "getBalance",
-    { owner: address as string, coinType: SUI_TYPE },
+    { owner: address as string, coinType: asset.assetType },
     { enabled: !!address, refetchInterval: 15_000 },
   );
   return { ...q, balance: q.data ? BigInt(q.data.totalBalance) : 0n };
 }
 
-export function useLendShareBalance(address: string | undefined) {
+export function useLendShareBalance(address: string | undefined, asset: LendAsset) {
   const q = useSuiClientQuery(
     "getBalance",
-    { owner: address as string, coinType: LEND_SHARE_TYPE },
+    { owner: address as string, coinType: asset.shareType },
     { enabled: !!address, refetchInterval: 15_000 },
   );
   return { ...q, balance: q.data ? BigInt(q.data.totalBalance) : 0n };
 }
 
-export function useLendShares(address: string | undefined) {
+export function useLendShares(address: string | undefined, asset: LendAsset) {
   const q = useSuiClientQuery(
     "getCoins",
-    { owner: address as string, coinType: LEND_SHARE_TYPE },
+    { owner: address as string, coinType: asset.shareType },
     { enabled: !!address },
   );
   const coins = (q.data?.data ?? []) as { coinObjectId: string; balance: string }[];
   return { ...q, coins };
 }
 
-export function useSuiMarginPool() {
+export function useMarginPool(asset: LendAsset) {
   const q = useSuiClientQuery(
     "getObject",
-    { id: SUI_MARGIN_POOL, options: { showContent: true } },
+    { id: asset.marginPool, options: { showContent: true } },
     { refetchInterval: 30_000 },
   );
   const f = (q.data?.data?.content as any)?.fields;
@@ -104,7 +139,6 @@ export function useSuiMarginPool() {
         config.interest_config?.fields ?? config.interest_config ?? {};
       const poolCfg =
         config.margin_pool_config?.fields ?? config.margin_pool_config ?? {};
-
       const SCALE = 1e9;
       pool = {
         totalSupply: BigInt(state.total_supply ?? 0),

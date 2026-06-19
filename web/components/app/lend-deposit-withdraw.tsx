@@ -14,12 +14,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Panel } from "@/components/app/app-kit";
 import { ConnectWallet } from "@/components/app/connect-wallet";
 import {
-  useSuiBalance,
+  type LendAsset,
+  useAssetBalance,
   useLendShareBalance,
   useLendShares,
   GAS_RESERVE,
   LEND_SHARE_DECIMALS,
-  LEND_SUI_DECIMALS,
 } from "@/lib/lend";
 import {
   buildLendDepositTx,
@@ -57,10 +57,10 @@ function useDebounced<T>(value: T, delay = 400): T {
 const submitClass =
   "w-full rounded-full bg-foreground text-background hover:bg-foreground/90 h-11";
 
-function DepositTab() {
+function DepositTab({ asset }: { asset: LendAsset }) {
   const account = useCurrentAccount();
   const client = useSuiClient();
-  const { balance: suiBalance } = useSuiBalance(account?.address);
+  const { balance: assetBalance } = useAssetBalance(account?.address, asset);
   const { mutate, isPending: isSubmitting } = useSignAndExecuteTransaction();
 
   const [amount, setAmount] = useState("");
@@ -70,15 +70,19 @@ function DepositTab() {
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | undefined>();
 
-  const maxDepositable = suiBalance > GAS_RESERVE ? suiBalance - GAS_RESERVE : 0n;
+  const maxDepositable = asset.isGasToken
+    ? assetBalance > GAS_RESERVE
+      ? assetBalance - GAS_RESERVE
+      : 0n
+    : assetBalance;
 
   const amountRaw = useMemo(() => {
     try {
-      return parseUnits(amount, LEND_SUI_DECIMALS);
+      return parseUnits(amount, asset.decimals);
     } catch {
       return 0n;
     }
-  }, [amount]);
+  }, [amount, asset.decimals]);
 
   const hasAmount = amountRaw > 0n;
   const overBalance = hasAmount && amountRaw > maxDepositable;
@@ -88,7 +92,7 @@ function DepositTab() {
     let cancelled = false;
     const raw = (() => {
       try {
-        return parseUnits(debounced, LEND_SUI_DECIMALS);
+        return parseUnits(debounced, asset.decimals);
       } catch {
         return 0n;
       }
@@ -102,8 +106,8 @@ function DepositTab() {
     setPreviewLoading(true);
     setPreviewError(undefined);
     (async () => {
-      const tx = buildLendDepositTx(account.address, raw);
-      const result = await simulateLendDeltas(client, tx);
+      const tx = buildLendDepositTx(asset, account.address, raw);
+      const result = await simulateLendDeltas(client, tx, asset);
       if (cancelled) return;
       if (!result.ok) {
         setPreview({ shares: 0n, ok: false });
@@ -116,17 +120,17 @@ function DepositTab() {
     return () => {
       cancelled = true;
     };
-  }, [debounced, account?.address, maxDepositable, client]);
+  }, [debounced, account?.address, maxDepositable, client, asset]);
 
   function onDeposit() {
     if (!account?.address || !amountValid) return;
-    const tx = buildLendDepositTx(account.address, amountRaw);
+    const tx = buildLendDepositTx(asset, account.address, amountRaw);
     mutate(
       { transaction: tx },
       {
         onSuccess: (res) => {
           toast.success("Deposit submitted.", {
-            description: "tlSUI shares minted to your wallet.",
+            description: `tl${asset.symbol} shares minted to your wallet.`,
             action: {
               label: "View",
               onClick: () => window.open(explorerTx(res.digest), "_blank"),
@@ -140,13 +144,15 @@ function DepositTab() {
     );
   }
 
+  const noBalance = assetBalance === 0n;
+
   return (
     <div className="flex flex-col gap-5 pt-2">
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between">
-          <FieldLabel>Amount, SUI</FieldLabel>
+          <FieldLabel>Amount, {asset.symbol}</FieldLabel>
           <span className="text-xs font-mono text-muted-foreground">
-            Wallet {formatNumber(fromUnits(suiBalance, LEND_SUI_DECIMALS))}
+            Wallet {formatNumber(fromUnits(assetBalance, asset.decimals))}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -163,7 +169,7 @@ function DepositTab() {
             size="sm"
             className="border-foreground/15 font-mono text-xs"
             disabled={maxDepositable <= 0n || isSubmitting}
-            onClick={() => setAmount(String(fromUnits(maxDepositable, LEND_SUI_DECIMALS)))}
+            onClick={() => setAmount(String(fromUnits(maxDepositable, asset.decimals)))}
           >
             Max
           </Button>
@@ -176,9 +182,9 @@ function DepositTab() {
           {previewLoading ? (
             <Skeleton className="h-7 w-32" />
           ) : preview?.ok ? (
-            `${formatNumber(fromUnits(preview.shares, LEND_SHARE_DECIMALS))} tlSUI`
+            `${formatNumber(fromUnits(preview.shares, LEND_SHARE_DECIMALS))} tl${asset.symbol}`
           ) : (
-            <span className="text-muted-foreground">0 tlSUI</span>
+            <span className="text-muted-foreground">0 tl{asset.symbol}</span>
           )}
         </div>
         {hasAmount && !account && (
@@ -188,7 +194,9 @@ function DepositTab() {
         )}
         {overBalance && (
           <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
-            Amount exceeds depositable balance (wallet minus 0.1 SUI gas reserve).
+            {asset.isGasToken
+              ? "Amount exceeds depositable balance (wallet minus 0.1 SUI gas reserve)."
+              : "Amount exceeds your wallet balance."}
           </p>
         )}
         {preview && !preview.ok && previewError && (
@@ -198,10 +206,23 @@ function DepositTab() {
         )}
       </div>
 
-      <p className="text-xs text-muted-foreground leading-relaxed">
-        Yield is variable. Lending carries bad-debt risk if a borrower is not
-        liquidated in time. 0.1 SUI is reserved for gas; Max reflects this.
-      </p>
+      {account && noBalance && !asset.isGasToken && (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Your wallet holds no {asset.symbol}. You can get testnet {asset.symbol} from the DeepBook testnet faucet.
+        </p>
+      )}
+
+      {asset.isGasToken ? (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Yield is variable. Lending carries bad-debt risk if a borrower is not
+          liquidated in time. 0.1 SUI is reserved for gas; Max reflects this.
+        </p>
+      ) : (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Yield is variable. Lending carries bad-debt risk if a borrower is not
+          liquidated in time.
+        </p>
+      )}
 
       {account ? (
         <Button
@@ -209,7 +230,7 @@ function DepositTab() {
           disabled={!amountValid || isSubmitting}
           onClick={onDeposit}
         >
-          {isSubmitting ? "Confirming" : "Deposit SUI"}
+          {isSubmitting ? "Confirming" : `Deposit ${asset.symbol}`}
         </Button>
       ) : (
         <ConnectWallet
@@ -222,17 +243,17 @@ function DepositTab() {
   );
 }
 
-function WithdrawTab() {
+function WithdrawTab({ asset }: { asset: LendAsset }) {
   const account = useCurrentAccount();
   const client = useSuiClient();
-  const { balance: shareBalance } = useLendShareBalance(account?.address);
-  const { coins: shareCoins } = useLendShares(account?.address);
+  const { balance: shareBalance } = useLendShareBalance(account?.address, asset);
+  const { coins: shareCoins } = useLendShares(account?.address, asset);
   const { mutate, isPending: isSubmitting } = useSignAndExecuteTransaction();
 
   const [amount, setAmount] = useState("");
   const debounced = useDebounced(amount);
 
-  const [preview, setPreview] = useState<{ sui: bigint; ok: boolean } | null>(null);
+  const [preview, setPreview] = useState<{ assetOut: bigint; ok: boolean } | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | undefined>();
 
@@ -278,31 +299,31 @@ function WithdrawTab() {
     setPreviewLoading(true);
     setPreviewError(undefined);
     (async () => {
-      const tx = buildLendWithdrawTx(account.address, shareCoinIds, raw);
-      const result = await simulateLendDeltas(client, tx);
+      const tx = buildLendWithdrawTx(asset, account.address, shareCoinIds, raw);
+      const result = await simulateLendDeltas(client, tx, asset);
       if (cancelled) return;
       if (!result.ok) {
-        setPreview({ sui: 0n, ok: false });
+        setPreview({ assetOut: 0n, ok: false });
         setPreviewError(result.error ?? "Preview unavailable.");
       } else {
-        setPreview({ sui: result.sui, ok: true });
+        setPreview({ assetOut: result.asset, ok: true });
       }
       setPreviewLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, [debounced, account?.address, shareBalance, shareCoinIds, client]);
+  }, [debounced, account?.address, shareBalance, shareCoinIds, client, asset]);
 
   function onWithdraw() {
     if (!account?.address || shareCoinIds.length === 0 || sharesRaw <= 0n) return;
-    const tx = buildLendWithdrawTx(account.address, shareCoinIds, sharesRaw);
+    const tx = buildLendWithdrawTx(asset, account.address, shareCoinIds, sharesRaw);
     mutate(
       { transaction: tx },
       {
         onSuccess: (res) => {
           toast.success("Withdrawal submitted.", {
-            description: "SUI sent to your wallet.",
+            description: `${asset.symbol} sent to your wallet.`,
             action: {
               label: "View",
               onClick: () => window.open(explorerTx(res.digest), "_blank"),
@@ -320,7 +341,7 @@ function WithdrawTab() {
     <div className="flex flex-col gap-5 pt-2">
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between">
-          <FieldLabel>Amount, tlSUI shares</FieldLabel>
+          <FieldLabel>Amount, tl{asset.symbol} shares</FieldLabel>
           <span className="text-xs font-mono text-muted-foreground">
             Shares {formatNumber(fromUnits(shareBalance, LEND_SHARE_DECIMALS))}
           </span>
@@ -361,14 +382,14 @@ function WithdrawTab() {
       </div>
 
       <div className="border border-foreground/10 bg-foreground/[0.02] p-4">
-        <FieldLabel>SUI you receive, estimated</FieldLabel>
+        <FieldLabel>{asset.symbol} you receive, estimated</FieldLabel>
         <div className="mt-2 text-2xl font-display tracking-tight leading-none">
           {previewLoading ? (
             <Skeleton className="h-7 w-32" />
           ) : preview?.ok ? (
-            `${formatNumber(fromUnits(preview.sui, LEND_SUI_DECIMALS))} SUI`
+            `${formatNumber(fromUnits(preview.assetOut, asset.decimals))} ${asset.symbol}`
           ) : (
-            <span className="text-muted-foreground">0 SUI</span>
+            <span className="text-muted-foreground">0 {asset.symbol}</span>
           )}
         </div>
         {hasAmount && !account && (
@@ -385,7 +406,7 @@ function WithdrawTab() {
 
       {account && !hasShares && (
         <p className="text-xs text-muted-foreground leading-relaxed">
-          No tlSUI shares to withdraw yet. Deposit SUI to receive shares.
+          No tl{asset.symbol} shares to withdraw yet. Deposit {asset.symbol} to receive shares.
         </p>
       )}
 
@@ -395,7 +416,7 @@ function WithdrawTab() {
           disabled={!hasAmount || isSubmitting}
           onClick={onWithdraw}
         >
-          {isSubmitting ? "Confirming" : "Withdraw SUI"}
+          {isSubmitting ? "Confirming" : `Withdraw ${asset.symbol}`}
         </Button>
       ) : (
         <ConnectWallet
@@ -408,7 +429,7 @@ function WithdrawTab() {
   );
 }
 
-export function LendDepositWithdraw() {
+export function LendDepositWithdraw({ asset }: { asset: LendAsset }) {
   const [tab, setTab] = useState("deposit");
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash === "#withdraw") {
@@ -423,10 +444,10 @@ export function LendDepositWithdraw() {
           <TabsTrigger value="withdraw">Withdraw</TabsTrigger>
         </TabsList>
         <TabsContent value="deposit">
-          <DepositTab />
+          <DepositTab asset={asset} />
         </TabsContent>
         <TabsContent value="withdraw">
-          <WithdrawTab />
+          <WithdrawTab asset={asset} />
         </TabsContent>
       </Tabs>
     </Panel>

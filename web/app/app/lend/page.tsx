@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useCurrentAccount } from "@mysten/dapp-kit";
 import {
   PageHeader,
@@ -12,14 +13,12 @@ import {
 import { ConnectWallet } from "@/components/app/connect-wallet";
 import { LendDepositWithdraw } from "@/components/app/lend-deposit-withdraw";
 import {
+  LEND_ASSETS,
+  type LendAsset,
   useLendVaultState,
-  useSuiMarginPool,
+  useMarginPool,
   useLendShareBalance,
-  LEND_PKG,
-  LEND_VAULT_ID,
-  SUI_MARGIN_POOL,
   LEND_SHARE_DECIMALS,
-  LEND_SUI_DECIMALS,
 } from "@/lib/lend";
 import { fromUnits, formatNumber, formatPercent } from "@/lib/format";
 import { explorerObject } from "@/lib/config";
@@ -61,16 +60,47 @@ function computeApy(pool: {
   return { util, supplyApy };
 }
 
-const POINTS = [
+function AssetToggle({
+  value,
+  onChange,
+}: {
+  value: "sui" | "dusdc";
+  onChange: (v: "sui" | "dusdc") => void;
+}) {
+  const base =
+    "px-5 py-2 text-sm font-mono tracking-wide transition-colors border border-foreground/10";
+  const active = "bg-foreground text-background border-foreground";
+  const inactive = "bg-transparent text-muted-foreground hover:text-foreground";
+  return (
+    <div className="inline-flex">
+      <button
+        type="button"
+        className={`${base} ${value === "sui" ? active : inactive}`}
+        onClick={() => onChange("sui")}
+      >
+        SUI
+      </button>
+      <button
+        type="button"
+        className={`${base} ${value === "dusdc" ? active : inactive} border-l-0`}
+        onClick={() => onChange("dusdc")}
+      >
+        dUSDC
+      </button>
+    </div>
+  );
+}
+
+const HOW_IT_WORKS = [
   {
-    title: "SUI lent to margin traders",
+    title: "Lent to margin traders",
     detail:
-      "Your SUI is deposited into a DeepBook Margin pool where it is borrowed by traders to open leveraged positions.",
+      "Your asset is deposited into a DeepBook Margin pool where it is borrowed by traders to open leveraged positions.",
   },
   {
-    title: "tlSUI shares track your position",
+    title: "tl shares track your position",
     detail:
-      "You receive tlSUI shares on deposit. As interest accrues, each share redeems for more SUI over time.",
+      "You receive tl shares on deposit. As interest accrues, each share redeems for more of the underlying asset over time.",
   },
   {
     title: "Variable yield, honest risk",
@@ -80,10 +110,13 @@ const POINTS = [
 ];
 
 export default function LendPage() {
+  const [assetKey, setAssetKey] = useState<"sui" | "dusdc">("sui");
+  const asset: LendAsset = LEND_ASSETS[assetKey];
+
   const account = useCurrentAccount();
-  const { pool, isPending: poolPending } = useSuiMarginPool();
-  const { state: vaultState, isPending: vaultPending } = useLendVaultState();
-  const { balance: shareBalance } = useLendShareBalance(account?.address);
+  const { pool, isPending: poolPending } = useMarginPool(asset);
+  const { state: vaultState, isPending: vaultPending } = useLendVaultState(asset);
+  const { balance: shareBalance } = useLendShareBalance(account?.address, asset);
 
   const loading = poolPending || vaultPending || !pool;
 
@@ -98,15 +131,13 @@ export default function LendPage() {
     <div className="max-w-[1400px] mx-auto">
       <PageHeader
         label="Lend"
-        title={
-          <>
-            Lend SUI,
-            <br />
-            earn yield.
-          </>
-        }
-        description="Supply SUI to a DeepBook Margin lending pool. Yield is variable and paid by borrowers. Numbers are read live from testnet."
+        title={<>Lend, earn yield.</>}
+        description="Supply assets to DeepBook Margin lending pools. Yield is variable and paid by borrowers. Numbers are read live from testnet."
       />
+
+      <div className="mb-8">
+        <AssetToggle value={assetKey} onChange={setAssetKey} />
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         {loading ? (
@@ -130,12 +161,12 @@ export default function LendPage() {
             />
             <StatCard
               label="Total supplied"
-              value={`${formatNumber(fromUnits(pool.totalSupply, LEND_SUI_DECIMALS))} SUI`}
+              value={`${formatNumber(fromUnits(pool.totalSupply, asset.decimals))} ${asset.symbol}`}
               sub="Live from margin pool"
             />
             <StatCard
               label="Total borrowed"
-              value={`${formatNumber(fromUnits(pool.totalBorrow, LEND_SUI_DECIMALS))} SUI`}
+              value={`${formatNumber(fromUnits(pool.totalBorrow, asset.decimals))} ${asset.symbol}`}
               sub="Live from margin pool"
             />
           </>
@@ -144,7 +175,7 @@ export default function LendPage() {
 
       <div className="grid gap-8 lg:grid-cols-2 items-start mt-8">
         <div className="max-w-md w-full">
-          <LendDepositWithdraw />
+          <LendDepositWithdraw asset={asset} />
         </div>
 
         <div className="flex flex-col gap-6">
@@ -160,7 +191,7 @@ export default function LendPage() {
                     {formatNumber(yourShares)}
                   </span>
                   <span className="mt-2 block text-sm text-muted-foreground">
-                    tlSUI held
+                    tl{asset.symbol} held
                   </span>
                 </div>
                 <div>
@@ -171,7 +202,7 @@ export default function LendPage() {
                     {formatPercent(shareFraction)}
                   </span>
                   <span className="mt-2 block text-sm text-muted-foreground">
-                    Of total tlSUI outstanding
+                    Of total tl{asset.symbol} outstanding
                   </span>
                 </div>
               </div>
@@ -179,7 +210,7 @@ export default function LendPage() {
               <div className="mt-6 flex-1">
                 <EmptyState
                   title="Connect to view your position"
-                  description="Connect a Sui wallet on testnet to see your tlSUI shares and position."
+                  description="Connect a Sui wallet on testnet to see your shares and position."
                   image="/images/world.png"
                   action={
                     <ConnectWallet
@@ -208,7 +239,7 @@ export default function LendPage() {
                 How it works
               </span>
               <div className="mt-6 flex flex-col gap-6">
-                {POINTS.map((point) => (
+                {HOW_IT_WORKS.map((point) => (
                   <div key={point.title} className="flex items-start gap-4">
                     <div className="pt-2">
                       <AccentDot />
@@ -232,13 +263,13 @@ export default function LendPage() {
           <div>
             <Tag>Protocol</Tag>
             <p className="mt-4 text-muted-foreground leading-relaxed max-w-lg">
-              The lend vault and its tlSUI share coin live on Sui testnet. Liquidity
+              The lend vault and its tl{asset.symbol} share coin live on Sui testnet. Liquidity
               is supplied to a DeepBook Margin pool. Open any of these on the explorer
               to verify the live state.
             </p>
             <div className="mt-6 flex flex-col gap-3 text-sm">
               <a
-                href={explorerObject(LEND_VAULT_ID)}
+                href={explorerObject(asset.vault)}
                 target="_blank"
                 rel="noreferrer"
                 className="font-mono text-muted-foreground hover:text-foreground underline underline-offset-4 decoration-foreground/20 hover:decoration-foreground/60 transition-colors w-fit"
@@ -246,7 +277,7 @@ export default function LendPage() {
                 Lend vault object
               </a>
               <a
-                href={explorerObject(LEND_PKG)}
+                href={explorerObject(asset.package)}
                 target="_blank"
                 rel="noreferrer"
                 className="font-mono text-muted-foreground hover:text-foreground underline underline-offset-4 decoration-foreground/20 hover:decoration-foreground/60 transition-colors w-fit"
@@ -254,7 +285,7 @@ export default function LendPage() {
                 Move package
               </a>
               <a
-                href={explorerObject(SUI_MARGIN_POOL)}
+                href={explorerObject(asset.marginPool)}
                 target="_blank"
                 rel="noreferrer"
                 className="font-mono text-muted-foreground hover:text-foreground underline underline-offset-4 decoration-foreground/20 hover:decoration-foreground/60 transition-colors w-fit"
