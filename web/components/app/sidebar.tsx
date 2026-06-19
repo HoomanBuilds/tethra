@@ -7,6 +7,7 @@ import { AccentDot } from "@/components/app/app-kit";
 const navLinks = [
   { name: "Overview", href: "/app" },
   { name: "Deposit", href: "/app/deposit" },
+  { name: "Lend", href: "/app/lend" },
   { name: "Portfolio", href: "/app/portfolio" },
   { name: "Analytics", href: "/app/analytics" },
   { name: "Activity", href: "/app/activity" },
