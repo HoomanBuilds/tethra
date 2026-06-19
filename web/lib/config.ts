@@ -6,9 +6,9 @@ export const NETWORK = "testnet" as const;
 export const RPC_URL = getFullnodeUrl("testnet");
 
 export const PACKAGE =
-  "0xc5af7e1c3bf297aa38acc3804b3935cdb440e8955c4eb3d4ec153c21b4890db8";
+  "0x2765b4a30258ef4660ec7d24fef8b0b32a700633c6dc1a57a80f988de6bc1d9e";
 export const VAULT_ID =
-  "0x5ed0b38cd386fd9e7503dc4bea482087e24c3e86c0599baa196b6be0fecf9f86";
+  "0x21528665ba5731f9ffa2a7fe3024f87b77b86660a615118e2e3d1d150299aeb0";
 export const PREDICT_OBJECT =
   "0xc8736204d12f0a7277c86388a68bf8a194b0a14c5538ad13f22cbd8e2a38028a";
 export const DUSDC_TYPE =
