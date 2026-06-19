@@ -25,11 +25,11 @@ export interface LendAsset {
 export const LEND_ASSETS: Record<"sui" | "dusdc", LendAsset> = {
   sui: {
     key: "sui",
-    package: "0x7e721eef3cd64f8073dd3f31cccc55fe1f8df06dc795abdd13739562d26a841d",
-    vault: "0x66fbffc2ac715939213fac8ef2cfa2f5aa7180ff72d15c9f7c27c1802fc5c2c3",
+    package: "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93",
+    vault: "0x6310194b5838e5dfc06dcc254a80dc7897eb1c43cbb3d65cc539b79b6c3aa264",
     module: "lend_vault",
     shareType:
-      "0x7e721eef3cd64f8073dd3f31cccc55fe1f8df06dc795abdd13739562d26a841d::lend_vault::LEND_VAULT",
+      "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93::lend_vault::LEND_VAULT",
     marginPool:
       "0xcdbbe6a72e639b647296788e2e4b1cac5cea4246028ba388ba1332ff9a382eea",
     assetType: "0x2::sui::SUI",
