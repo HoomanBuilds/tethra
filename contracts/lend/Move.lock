@@ -40,6 +40,12 @@ use_environment = "testnet"
 manifest_digest = "6996F1AB8CD448FFBA142C085C488FE8A46B485E61E38A1891EFA52B30D9C12E"
 deps = { Sui = "Sui_1" }
 
+[pinned.testnet.dbusdc]
+source = { local = "deps/dbusdc" }
+use_environment = "testnet"
+manifest_digest = "5745706258F61D6CE210904B3E6AE87A73CE9D31A6F93BE4718C442529332A87"
+deps = { std = "MoveStdlib", sui = "Sui" }
+
 [pinned.testnet.deepbook]
 source = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/deepbook", rev = "daa5a9514908968f11be1d0388f673e0ee1a5059" }
 use_environment = "testnet"
@@ -55,8 +61,8 @@ deps = { deepbook = "deepbook", pyth = "Pyth", std = "MoveStdlib", sui = "Sui", 
 [pinned.testnet.tethra_lend]
 source = { root = true }
 use_environment = "testnet"
-manifest_digest = "35D61EC9FCB5C59053C5AB050833722369446E7C65235593BB892953E8FAE801"
-deps = { Pyth = "Pyth", Wormhole = "Wormhole", deepbook = "deepbook", deepbook_margin = "deepbook_margin", std = "MoveStdlib", sui = "Sui", token = "token_1" }
+manifest_digest = "707F8B4466C37D640C9B02A2B830DBEDCEE6DAE88E634293CD078C5307D9C3DE"
+deps = { Pyth = "Pyth", Wormhole = "Wormhole", dbusdc = "dbusdc", deepbook = "deepbook", deepbook_margin = "deepbook_margin", std = "MoveStdlib", sui = "Sui", token = "token_1" }
 
 [pinned.testnet.token]
 source = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/token", rev = "daa5a9514908968f11be1d0388f673e0ee1a5059" }

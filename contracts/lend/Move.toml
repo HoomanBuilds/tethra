@@ -9,6 +9,7 @@ deepbook = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "pac
 token = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/token", rev = "190ab8fd15bca03b20965ab2a7b6911fcdf2bf1f", override = true }
 Pyth = { git = "https://github.com/pyth-network/pyth-crosschain.git", subdir = "target_chains/sui/contracts", rev = "3bd1262dcba9518a6901aa6a15f04072799bfb37" }
 Wormhole = { git = "https://github.com/wormhole-foundation/wormhole.git", subdir = "sui/wormhole", rev = "b71be5cbb9537c4aac8e23e74371affa3825efcd" }
+dbusdc = { local = "deps/dbusdc" }
 
 [addresses]
 tethra_lend = "0x0"
