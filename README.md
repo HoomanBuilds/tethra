@@ -27,7 +27,7 @@ cd contracts/lend  && sui move test    # Tier 2 (lending vaults)
 
 Deployed on Sui testnet (`deployments/testnet.json`):
 
-- **Tier 1 Predict vault:** package `0xc5af7e1c…`, shared Vault `0x5ed0b38c…`, linking live DeepBook Predict (`0xf5ea…5138`). The deposit/withdraw round-trip script lives in `keeper/` and runs once DUSDC is in the wallet.
+- **Tier 1 Predict vault:** package `0x2765b4a3…`, shared Vault `0x21528665…`, share coin `tPLP` ("Tethra Predict Vault Share"), linking live DeepBook Predict (`0xf5ea…5138`). The deposit/withdraw round-trip script lives in `keeper/`.
 - **Tier 2 SUI lending vault:** shared vault `0x66fbffc2…`, supplying the live DeepBook Margin SUI pool. A deposit dry-run through the vault succeeds on testnet.
 - **Tier 2 dUSDC lending vault:** shared vault `0xccc2def2…` (package `0x267106…`), supplying the live DeepBook Margin dUSDC pool.
 
