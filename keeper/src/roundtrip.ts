@@ -47,7 +47,8 @@ async function main() {
     console.log('no DUSDC yet — request from the Tally faucet, then re-run.');
     return;
   }
-  const amount = total / 2n > 0n ? total / 2n : total;
+  const DEPOSIT = 50_000_000n; // 50 DUSDC (6 decimals)
+  const amount = total >= DEPOSIT ? DEPOSIT : total;
 
   const dtx = new Transaction();
   const src = coins.data[0].coinObjectId;
