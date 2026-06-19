@@ -10,19 +10,22 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Panel } from "@/components/app/app-kit";
+import { ConnectWallet } from "@/components/app/connect-wallet";
 import { useVaultState, useDusdcBalance, useShareBalance, useCoins } from "@/lib/vault";
 import { buildDepositTx, buildWithdrawTx, simulateDeltas } from "@/lib/tx";
 import {
   fromDusdc,
   fromShares,
   toDusdc,
+  toShares,
   formatNumber,
   formatUsd,
 } from "@/lib/format";
 import { DUSDC_TYPE, SHARE_TYPE, FAUCET_URL, explorerTx } from "@/lib/config";
+
+const PCT_PRESETS = [25, 50, 75, 100];
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -49,6 +52,13 @@ function FaucetNote({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Keep only digits and a single decimal point.
+function sanitizeDecimal(input: string): string {
+  const cleaned = input.replace(/[^0-9.]/g, "");
+  const parts = cleaned.split(".");
+  return parts.length <= 1 ? cleaned : `${parts[0]}.${parts.slice(1).join("")}`;
+}
+
 function useDebounced<T>(value: T, delay = 400): T {
   const [debounced, setDebounced] = useState(value);
   useEffect(() => {
@@ -57,6 +67,9 @@ function useDebounced<T>(value: T, delay = 400): T {
   }, [value, delay]);
   return debounced;
 }
+
+const submitClass =
+  "w-full rounded-full bg-foreground text-background hover:bg-foreground/90 h-11";
 
 function DepositTab() {
   const account = useCurrentAccount();
@@ -87,11 +100,13 @@ function DepositTab() {
     }
   }, [amount]);
 
-  const amountValid = amountRaw > 0n && amountRaw <= dusdcBalance;
+  const hasAmount = amountRaw > 0n;
+  const overBalance = hasAmount && amountRaw > dusdcBalance;
   const overCap =
     !!state &&
     state.depositCap > 0n &&
     state.costBasis + amountRaw > state.depositCap;
+  const amountValid = hasAmount && !overBalance && !overCap;
 
   useEffect(() => {
     let cancelled = false;
@@ -149,9 +164,6 @@ function DepositTab() {
     );
   }
 
-  const canSubmit =
-    !!account && hasDusdc && amountValid && !overCap && !isSubmitting;
-
   return (
     <div className="flex flex-col gap-5 pt-2">
       <div className="flex flex-col gap-2">
@@ -166,15 +178,15 @@ function DepositTab() {
             inputMode="decimal"
             placeholder="0.00"
             value={amount}
-            onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
-            disabled={!account || !hasDusdc}
-            className="font-mono"
+            onChange={(e) => setAmount(sanitizeDecimal(e.target.value))}
+            disabled={isSubmitting}
+            className="font-mono text-base"
           />
           <Button
             variant="outline"
             size="sm"
             className="border-foreground/15 font-mono text-xs"
-            disabled={!account || !hasDusdc}
+            disabled={!hasDusdc || isSubmitting}
             onClick={() => setAmount(String(fromDusdc(dusdcBalance)))}
           >
             Max
@@ -193,6 +205,16 @@ function DepositTab() {
             <span className="text-muted-foreground">0 shares</span>
           )}
         </div>
+        {hasAmount && !account && (
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+            Connect your wallet to preview and deposit.
+          </p>
+        )}
+        {overBalance && (
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+            Amount exceeds your wallet balance.
+          </p>
+        )}
         {preview && !preview.ok && previewError && (
           <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
             Preview unavailable. {previewError}
@@ -217,22 +239,24 @@ function DepositTab() {
         </p>
       )}
 
-      <Button
-        className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90"
-        disabled={!canSubmit}
-        onClick={onDeposit}
-      >
-        {!account
-          ? "Connect a wallet"
-          : isSubmitting
-            ? "Confirming"
-            : "Deposit"}
-      </Button>
+      {account ? (
+        <Button
+          className={submitClass}
+          disabled={!amountValid || isSubmitting}
+          onClick={onDeposit}
+        >
+          {isSubmitting ? "Confirming" : "Deposit"}
+        </Button>
+      ) : (
+        <ConnectWallet
+          className={submitClass}
+          label="Connect a wallet to deposit"
+          showAccount={false}
+        />
+      )}
     </div>
   );
 }
-
-const PCT_PRESETS = [25, 50, 75, 100];
 
 function WithdrawTab() {
   const account = useCurrentAccount();
@@ -241,8 +265,8 @@ function WithdrawTab() {
   const { coins: shareCoins } = useCoins(account?.address, SHARE_TYPE);
   const { mutate, isPending: isSubmitting } = useSignAndExecuteTransaction();
 
-  const [pct, setPct] = useState(100);
-  const debouncedPct = useDebounced(pct);
+  const [amount, setAmount] = useState("");
+  const debounced = useDebounced(amount);
 
   const [preview, setPreview] = useState<{ dusdc: bigint; ok: boolean } | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -254,13 +278,35 @@ function WithdrawTab() {
   );
 
   const hasShares = shareBalance > 0n;
-  // bigint math, never float, to avoid precision loss on share proportions.
-  const shares = (shareBalance * BigInt(pct)) / 100n;
+
+  // Parse the typed share amount, clamped to the balance (bigint, no float loss).
+  const sharesRaw = useMemo(() => {
+    try {
+      const r = toShares(amount);
+      return r > shareBalance ? shareBalance : r;
+    } catch {
+      return 0n;
+    }
+  }, [amount, shareBalance]);
+
+  const hasAmount = sharesRaw > 0n;
+
+  function setPct(pct: number) {
+    const target = (shareBalance * BigInt(pct)) / 100n;
+    setAmount(String(fromShares(target)));
+  }
 
   useEffect(() => {
     let cancelled = false;
-    const sharesToWithdraw = (shareBalance * BigInt(debouncedPct)) / 100n;
-    if (!account?.address || sharesToWithdraw <= 0n || shareCoinIds.length === 0) {
+    const raw = (() => {
+      try {
+        const r = toShares(debounced);
+        return r > shareBalance ? shareBalance : r;
+      } catch {
+        return 0n;
+      }
+    })();
+    if (!account?.address || raw <= 0n || shareCoinIds.length === 0) {
       setPreview(null);
       setPreviewError(undefined);
       setPreviewLoading(false);
@@ -269,7 +315,7 @@ function WithdrawTab() {
     setPreviewLoading(true);
     setPreviewError(undefined);
     (async () => {
-      const tx = buildWithdrawTx(account.address, shareCoinIds, sharesToWithdraw);
+      const tx = buildWithdrawTx(account.address, shareCoinIds, raw);
       const result = await simulateDeltas(client, tx);
       if (cancelled) return;
       if (!result.ok) {
@@ -283,11 +329,11 @@ function WithdrawTab() {
     return () => {
       cancelled = true;
     };
-  }, [debouncedPct, account?.address, shareBalance, shareCoinIds, client]);
+  }, [debounced, account?.address, shareBalance, shareCoinIds, client]);
 
   function onWithdraw() {
-    if (!account?.address || shareCoinIds.length === 0 || shares <= 0n) return;
-    const tx = buildWithdrawTx(account.address, shareCoinIds, shares);
+    if (!account?.address || shareCoinIds.length === 0 || sharesRaw <= 0n) return;
+    const tx = buildWithdrawTx(account.address, shareCoinIds, sharesRaw);
     mutate(
       { transaction: tx },
       {
@@ -299,7 +345,7 @@ function WithdrawTab() {
               onClick: () => window.open(explorerTx(res.digest), "_blank"),
             },
           });
-          setPct(100);
+          setAmount("");
           setPreview(null);
         },
         onError: (e) => toast.error(e.message),
@@ -307,48 +353,43 @@ function WithdrawTab() {
     );
   }
 
-  const canSubmit = !!account && hasShares && shares > 0n && !isSubmitting;
-
   return (
     <div className="flex flex-col gap-5 pt-2">
       <div className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between">
-          <FieldLabel>Withdraw</FieldLabel>
+          <FieldLabel>Amount, shares</FieldLabel>
           <span className="text-xs font-mono text-muted-foreground">
             Shares {formatNumber(fromShares(shareBalance))}
           </span>
         </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-3xl font-display tracking-tight leading-none">
-            {pct}%
-          </span>
-          <span className="text-xs font-mono text-muted-foreground">
-            {formatNumber(fromShares(shares))} shares
-          </span>
+        <div className="flex items-center gap-2">
+          <Input
+            inputMode="decimal"
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(sanitizeDecimal(e.target.value))}
+            disabled={isSubmitting}
+            className="font-mono text-base"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-foreground/15 font-mono text-xs"
+            disabled={!hasShares || isSubmitting}
+            onClick={() => setAmount(String(fromShares(shareBalance)))}
+          >
+            Max
+          </Button>
         </div>
-
-        <Slider
-          value={[pct]}
-          min={0}
-          max={100}
-          step={1}
-          disabled={!account || !hasShares}
-          onValueChange={(v) => setPct(v[0] ?? 0)}
-          className="mt-1"
-        />
-
         <div className="mt-1 grid grid-cols-4 gap-2">
           {PCT_PRESETS.map((p) => (
             <Button
               key={p}
               variant="outline"
               size="sm"
-              disabled={!account || !hasShares}
+              disabled={!hasShares || isSubmitting}
               onClick={() => setPct(p)}
-              className={`border-foreground/15 font-mono text-xs ${
-                pct === p ? "bg-foreground/[0.06]" : ""
-              }`}
+              className="border-foreground/15 font-mono text-xs"
             >
               {p}%
             </Button>
@@ -367,6 +408,11 @@ function WithdrawTab() {
             <span className="text-muted-foreground">{formatUsd(0)}</span>
           )}
         </div>
+        {hasAmount && !account && (
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+            Connect your wallet to preview and withdraw.
+          </p>
+        )}
         {preview && !preview.ok && previewError && (
           <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
             Preview unavailable. {previewError}
@@ -385,17 +431,21 @@ function WithdrawTab() {
         </p>
       )}
 
-      <Button
-        className="w-full rounded-full bg-foreground text-background hover:bg-foreground/90"
-        disabled={!canSubmit}
-        onClick={onWithdraw}
-      >
-        {!account
-          ? "Connect a wallet"
-          : isSubmitting
-            ? "Confirming"
-            : "Withdraw"}
-      </Button>
+      {account ? (
+        <Button
+          className={submitClass}
+          disabled={!hasAmount || isSubmitting}
+          onClick={onWithdraw}
+        >
+          {isSubmitting ? "Confirming" : "Withdraw"}
+        </Button>
+      ) : (
+        <ConnectWallet
+          className={submitClass}
+          label="Connect a wallet to withdraw"
+          showAccount={false}
+        />
+      )}
     </div>
   );
 }

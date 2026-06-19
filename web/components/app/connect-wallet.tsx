@@ -18,14 +18,22 @@ import { Button } from "@/components/ui/button";
 import { truncateAddress } from "@/lib/format";
 import { FAUCET_URL } from "@/lib/config";
 
-export function ConnectWallet() {
+export function ConnectWallet({
+  className,
+  label = "Connect wallet",
+  showAccount = true,
+}: {
+  className?: string;
+  label?: string;
+  showAccount?: boolean;
+} = {}) {
   const wallets = useWallets();
   const { mutate: connect } = useConnectWallet();
   const account = useCurrentAccount();
   const { mutate: disconnect } = useDisconnectWallet();
   const [open, setOpen] = useState(false);
 
-  if (account) {
+  if (account && showAccount) {
     return (
       <div className="flex items-center gap-3">
         <span className="font-mono text-xs text-muted-foreground">
@@ -48,9 +56,12 @@ export function ConnectWallet() {
       <DialogTrigger asChild>
         <Button
           size="sm"
-          className="rounded-full bg-foreground text-background hover:bg-foreground/90 h-8 px-4 text-xs"
+          className={
+            className ??
+            "rounded-full bg-foreground text-background hover:bg-foreground/90 h-8 px-4 text-xs"
+          }
         >
-          Connect wallet
+          {label}
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-background border-foreground/10 sm:max-w-md">
