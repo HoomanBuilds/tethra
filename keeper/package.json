@@ -5,7 +5,8 @@
   "scripts": {
     "dry": "tsx src/keeper.ts --dry",
     "start": "tsx src/keeper.ts",
-    "roundtrip": "tsx src/roundtrip.ts"
+    "roundtrip": "tsx src/roundtrip.ts",
+    "lend": "tsx src/lend_roundtrip.ts"
   },
   "dependencies": {
     "@mysten/sui": "^1.30.0"

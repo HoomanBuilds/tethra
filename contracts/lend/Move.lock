@@ -19,7 +19,7 @@ deps = {}
 [pinned.testnet.Pyth]
 source = { git = "https://github.com/pyth-network/pyth-crosschain.git", subdir = "target_chains/sui/contracts", rev = "3bd1262dcba9518a6901aa6a15f04072799bfb37" }
 use_environment = "testnet"
-manifest_digest = "9942AAB3725BC51DADB046B4440A3D008E554C9286ECC72B3DE5CC0309C0D63D"
+manifest_digest = "5998614339FA5C03E2CDC564C4CE8D7381576C8ACB6B4236930D747D4F82C546"
 deps = { Sui = "Sui_1", Wormhole = "Wormhole" }
 
 [pinned.testnet.Sui]

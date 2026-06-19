@@ -16,5 +16,20 @@
     "deepbookPackage": "0xfb28c4cbc6865bd1c897d26aecbe1f8792d1509a20ffec692c800660cbec6982",
     "tokenPackage": "0x36dbef866a1d62bf7328989a10fb2f07d769f4ee587c0de4a0a256e57e0a58a8"
   },
-  "note": "Built from contracts/vault/ with deepbookv3 deps pinned at rev 1159d79af33c70e09e406310e1d8f067832ede9d. To redeploy, set `published-at` on the direct deps (predict, dusdc) to the addresses above so the build links to the live protocol instead of republishing. Deposit/withdraw round-trip pending DUSDC test tokens."
+  "note": "Built from contracts/vault/ with deepbookv3 deps pinned at rev 1159d79af33c70e09e406310e1d8f067832ede9d. To redeploy, set `published-at` on the direct deps (predict, dusdc) to the addresses above so the build links to the live protocol instead of republishing. Deposit/withdraw round-trip pending DUSDC test tokens.",
+  "lendVault": {
+    "publishDigest": "GDNUcvSmBnwXnkhqAguoGoYHC6pxsVF7UqzR8gggz7WN",
+    "initializeDigest": "DVeoyQbob6KKsdJF2ihFYMKksKwEJMGPMJyHABnE2YJr",
+    "package": "0x7e721eef3cd64f8073dd3f31cccc55fe1f8df06dc795abdd13739562d26a841d",
+    "lendVault": "0x66fbffc2ac715939213fac8ef2cfa2f5aa7180ff72d15c9f7c27c1802fc5c2c3",
+    "adminCap": "0xc32e60457b1100e38df8b2e084913bc5ae2c4a97a580914bc29a38d9fdff5ab7",
+    "upgradeCap": "0xc905269e277f24c85ee3e6916b2445025a03c5cb9f22d871a63e5ff904c492ec",
+    "coinMetadata": "0x2d976c4cf88fc0f6b3863ddf12d076b0f490a10d2e93deab0066440a8496089c",
+    "shareType": "0x7e721eef3cd64f8073dd3f31cccc55fe1f8df06dc795abdd13739562d26a841d::lend_vault::LEND_VAULT",
+    "supplierCapId": "0x60c1bbb50e2df66d781adda59fce2eace7fca854eae5b1f0bad92a681f7c0b05",
+    "linkedPool": "0xcdbbe6a72e639b647296788e2e4b1cac5cea4246028ba388ba1332ff9a382eea",
+    "linkedRegistry": "0x48d7640dfae2c6e9ceeada197a7a1643984b5a24c55a0c6c023dac77e0339f75",
+    "deepbookMarginV1": "0xb8620c24c9ea1a4a41e79613d2b3d1d93648d1bb6f6b789a7c8f261c94110e4b",
+    "note": "lend_vault links to deepbook_margin v1 (original-id) because v14 has margin_version()=2 but the testnet MarginRegistry only has allowed_versions=[1]. v1 bytecode has margin_version()=1 which passes the registry check."
+  }
 }
