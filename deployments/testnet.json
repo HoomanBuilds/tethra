@@ -30,14 +30,16 @@
     "linkedPool": "0xcdbbe6a72e639b647296788e2e4b1cac5cea4246028ba388ba1332ff9a382eea",
     "linkedRegistry": "0x48d7640dfae2c6e9ceeada197a7a1643984b5a24c55a0c6c023dac77e0339f75",
     "deepbookMarginV1": "0xb8620c24c9ea1a4a41e79613d2b3d1d93648d1bb6f6b789a7c8f261c94110e4b",
-    "note": "lend_vault links to deepbook_margin v1 (original-id) because v14 has margin_version()=2 but the testnet MarginRegistry only has allowed_versions=[1]. v1 bytecode has margin_version()=1 which passes the registry check. This package is now superseded by lendVaultV2 which includes both SUI and DBUSDC vaults."
+    "note": "lend_vault links to deepbook_margin v1 (original-id) because v14 has margin_version()=2 but the testnet MarginRegistry only has allowed_versions=[1]. v1 bytecode has margin_version()=1 which passes the registry check. DEPRECATED orphan: the frontend and keeper now use lendVaultV2 for both SUI and dUSDC; this SUI-only vault is unused."
   },
   "lendVaultV2": {
     "publishDigest": "2FFQkXjEbSB2Tsa7iPsHSqndE3ighbv2CYS8M7hCnaTE",
     "package": "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93",
     "upgradeCap": "0x184b30dc209cd4d95ac27d2c580a2742b252d6ed75cb052904c38b7d475b29f5",
+    "note": "CANONICAL Tier 2 lending deployment: both SUI (lendVault, initialized) and dUSDC (lendVaultDbusdc) live in this one package. The frontend (web/lib/lend.ts) and keeper use these. Links deepbook_margin v1.",
     "lendVault": {
       "vault": "0x6310194b5838e5dfc06dcc254a80dc7897eb1c43cbb3d65cc539b79b6c3aa264",
+      "initializeDigest": "DbjhG4XB9muqiWQuRyp3fZd7Erx6SAFPHpxCEf35PPHM",
       "adminCap": "0x37ca201a12d0916d66e745e082a8cd606d7f8f1bcb8f4b31b720b99a86b495e3",
       "shareType": "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93::lend_vault::LEND_VAULT",
       "linkedPool": "0xcdbbe6a72e639b647296788e2e4b1cac5cea4246028ba388ba1332ff9a382eea",
