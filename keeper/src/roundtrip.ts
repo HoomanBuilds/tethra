@@ -29,7 +29,7 @@ async function vaultState() {
 }
 
 async function main() {
-  console.log(`=== PLP vault round-trip (testnet) ===`);
+  console.log(`=== Tethra Predict vault round-trip (testnet) ===`);
   console.log(`package ${VPKG}`);
   await vaultState();
 
