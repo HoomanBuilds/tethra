@@ -9,6 +9,7 @@ import {
   EmptyState,
   Tag,
 } from "@/components/app/app-kit";
+import { ConnectWallet } from "@/components/app/connect-wallet";
 import { TethraChart } from "@/components/app/chart";
 import { CHART } from "@/lib/chart-theme";
 import { backtest } from "@/lib/backtest-data";
@@ -160,8 +161,15 @@ export default function VaultOverview() {
             <div className="mt-6 flex-1">
               <EmptyState
                 title="Connect to view your position"
-                description="Use the Connect wallet button in the top right to see your vault shares and value."
+                description="Connect a Sui wallet on testnet to see your vault shares and value."
                 image="/images/world.png"
+                action={
+                  <ConnectWallet
+                    className="rounded-full bg-foreground text-background hover:bg-foreground/90 h-11 px-6"
+                    label="Connect wallet"
+                    showAccount={false}
+                  />
+                }
               />
             </div>
           )}

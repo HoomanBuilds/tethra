@@ -4,6 +4,7 @@ import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
 import { PACKAGE, explorerTx } from "@/lib/config";
 import { PageHeader, Panel, EmptyState, Tag } from "@/components/app/app-kit";
+import { ConnectWallet } from "@/components/app/connect-wallet";
 
 type VaultAction = "Deposit" | "Withdraw";
 
@@ -108,6 +109,13 @@ export default function ActivityPage() {
           title="Connect to see your activity"
           description="Your vault deposits and withdrawals on testnet will appear here."
           image="/images/connection.png"
+          action={
+            <ConnectWallet
+              className="rounded-full bg-foreground text-background hover:bg-foreground/90 h-11 px-6"
+              label="Connect wallet"
+              showAccount={false}
+            />
+          }
         />
       ) : isLoading ? (
         <Panel className="p-8">

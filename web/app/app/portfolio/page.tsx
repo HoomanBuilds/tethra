@@ -12,6 +12,7 @@ import {
 } from "@/components/app/app-kit";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ConnectWallet } from "@/components/app/connect-wallet";
 import { useShareBalance, useVaultState, useCoins } from "@/lib/vault";
 import { buildWithdrawTx, simulateDeltas } from "@/lib/tx";
 import {
@@ -61,6 +62,13 @@ export default function PortfolioPage() {
           title="Connect to see your portfolio"
           description="Connect a Sui wallet on testnet to view your shares, principal, and current redeemable value."
           image="/images/tree.png"
+          action={
+            <ConnectWallet
+              className="rounded-full bg-foreground text-background hover:bg-foreground/90 h-11 px-6"
+              label="Connect wallet"
+              showAccount={false}
+            />
+          }
         />
       </div>
     );
@@ -189,7 +197,7 @@ export default function PortfolioPage() {
           variant="outline"
           className="rounded-full border-foreground/15"
         >
-          <Link href="/app/deposit">Withdraw</Link>
+          <Link href="/app/deposit#withdraw">Withdraw</Link>
         </Button>
       </div>
     </div>

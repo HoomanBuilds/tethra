@@ -451,9 +451,15 @@ function WithdrawTab() {
 }
 
 export function DepositWithdraw() {
+  const [tab, setTab] = useState("deposit");
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash === "#withdraw") {
+      setTab("withdraw");
+    }
+  }, []);
   return (
     <Panel className="p-6 lg:p-8">
-      <Tabs defaultValue="deposit">
+      <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="grid w-full grid-cols-2 bg-foreground/[0.04]">
           <TabsTrigger value="deposit">Deposit</TabsTrigger>
           <TabsTrigger value="withdraw">Withdraw</TabsTrigger>
