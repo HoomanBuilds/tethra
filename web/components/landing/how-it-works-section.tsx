@@ -6,10 +6,10 @@ const steps = [
   {
     number: "01",
     title: "Deposit",
-    subtitle: "dUSDC once",
-    description: "Send dUSDC to the vault a single time. You receive shares; no further action or active management is required.",
+    subtitle: "once",
+    description: "Send SUI or dUSDC to the vault a single time. You receive shares; no further action or active management is required.",
     code: `const vault = new Vault({
-  asset: 'dUSDC',
+  asset: ['SUI', 'dUSDC'],
   action: 'deposit',
   amount: true,
   shares: 'minted'
@@ -18,12 +18,12 @@ const steps = [
   {
     number: "02",
     title: "Supply",
-    subtitle: "PLP liquidity",
-    description: "The vault supplies PLP liquidity to DeepBook Predict, auto-compounds returns, and caps exposure to limit drawdown.",
+    subtitle: "to DeepBook",
+    description: "The vault supplies PLP liquidity on DeepBook Predict, or lends on DeepBook Margin, and auto-compounds returns within conservative limits.",
     code: `await vault.supply({
-  venue: 'DeepBook Predict',
-  pool: ['plp', 'btc-markets'],
-  policy: 'conservative-caps',
+  venue: ['Predict', 'Margin'],
+  asset: ['dUSDC', 'SUI'],
+  policy: 'conservative',
   compound: 'auto'
 })`,
   },
@@ -31,13 +31,13 @@ const steps = [
     number: "03",
     title: "Redeem",
     subtitle: "& withdraw",
-    description: "A permissionless keeper redeems settled positions. Withdraw any time at your share price, net of fee.",
+    description: "Withdraw any time at your share price, net of a profit-only fee. On Predict, a permissionless keeper clears settled positions.",
     code: `keeper.redeem({
   vault: [settled],
   fields: ['shares', 'price', 'fee'],
   netOfFee: true
 })
-// 15% high-water-mark fee`,
+// 15% fee on profit`,
   },
 ];
 

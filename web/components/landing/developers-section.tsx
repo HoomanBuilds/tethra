@@ -5,19 +5,19 @@ import { useState, useEffect, useRef } from "react";
 const features = [
   {
     title: "Move + TypeScript",
-    description: "On-chain vault with a typed keeper and tooling."
+    description: "On-chain vaults with a typed keeper and tooling."
+  },
+  {
+    title: "Two live vaults",
+    description: "Predict PLP and Margin lending on Sui testnet."
+  },
+  {
+    title: "Verifiable on-chain",
+    description: "Read vault state and contracts on the Sui explorer."
   },
   {
     title: "Reproducible backtests",
-    description: "Run the strategy on real historical BTC data."
-  },
-  {
-    title: "SVI pricing engine",
-    description: "Validated to ~1e-5 against reference outputs."
-  },
-  {
-    title: "Public repository",
-    description: "Read, verify, and run everything yourself."
+    description: "Replay the Predict strategy on real historical BTC data."
   },
 ];
 
@@ -84,8 +84,8 @@ export function DevelopersSection() {
           }`}
         >
           <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-md">
-            A Move smart contract with a TypeScript keeper and tooling.
-            Every claim is backed by code and reproducible backtests.
+            Move smart contracts with a TypeScript keeper and tooling.
+            Vault state is verifiable on-chain, and the Predict strategy is backed by reproducible backtests.
           </p>
           <div className="grid grid-cols-2 gap-6">
             {features.map((feature, index) => (

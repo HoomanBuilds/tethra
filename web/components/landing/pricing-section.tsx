@@ -15,7 +15,7 @@ const plans = [
       "No lock-up period",
       "Permissionless access",
     ],
-    cta: "Deposit dUSDC",
+    cta: "Open a vault",
     highlight: false,
   },
   {
@@ -24,7 +24,7 @@ const plans = [
     price: { monthly: 15, annual: 15 },
     features: [
       "15% of realized profit",
-      "High-water-marked",
+      "Fee on profit only",
       "No fee without new gains",
       "No fee on principal",
       "Auto-compounded returns",
@@ -151,7 +151,7 @@ Fees on
                     )}
                     {plan.price.monthly !== null && plan.price.monthly > 0 && (
                       <p className="text-xs text-muted-foreground mt-2 font-mono">
-                        {isAnnual ? "high-water-marked" : "high-water-marked"}
+                        {isAnnual ? "on realized profit" : "on realized profit"}
                       </p>
                     )}
                   </div>

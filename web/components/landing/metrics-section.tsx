@@ -4,25 +4,25 @@ import { useEffect, useState, useRef } from "react";
 
 const metrics = [
   {
-    value: 4027,
+    value: 2,
     suffix: "",
     prefix: "",
-    label: "Settled oracles backtested",
-    sublabel: "plus BTC crash stress tests",
-  },
-  {
-    value: 2,
-    suffix: "%",
-    prefix: "~",
-    label: "Worst-case drawdown",
-    sublabel: "bounded by exposure caps",
+    label: "Vaults live on Sui testnet",
+    sublabel: "Predict PLP + Margin lending",
   },
   {
     value: 15,
     suffix: "%",
     prefix: "",
     label: "Performance fee",
-    sublabel: "high-water-marked",
+    sublabel: "on realized profit only",
+  },
+  {
+    value: 0,
+    suffix: "",
+    prefix: "",
+    label: "Management & deposit fees",
+    sublabel: "withdraw any time",
   },
 ];
 
@@ -329,8 +329,8 @@ export function MetricsSection() {
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
           <span>Live on Sui testnet</span>
-          <span>Redeem keeper live</span>
-          <span>Pricing match ~1e-5</span>
+          <span>Predict PLP + Margin lending</span>
+          <span>Keeper redeems Predict positions</span>
           <span>No management fee</span>
           <span className="text-foreground">85% kept by depositors</span>
         </div>

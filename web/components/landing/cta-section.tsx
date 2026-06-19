@@ -53,12 +53,12 @@ export function CtaSection() {
                 <h2 className="text-6xl md:text-7xl lg:text-[72px] font-display tracking-tight mb-8 leading-[0.95]">
                   Ready to supply
                   <br />
-                  PLP liquidity?
+                  liquidity?
                 </h2>
 
                 <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-xl">
-                  Provide risk-managed PLP liquidity on DeepBook Predict.
-                  Deposit dUSDC once and let the vault do the rest.
+                  Supply risk-managed liquidity on DeepBook Predict and Margin.
+                  Deposit once and let the vault do the rest.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -75,7 +75,7 @@ export function CtaSection() {
                     variant="outline"
                     className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
                   >
-                    <Link href="/app">Read the docs</Link>
+                    <Link href="/app">Explore the vaults</Link>
                   </Button>
                 </div>
 

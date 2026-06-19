@@ -6,7 +6,7 @@ const features = [
   {
     number: "01",
     title: "One-Deposit Vault",
-    description: "Deposit dUSDC once and you're done. The vault supplies PLP liquidity to DeepBook Predict for you. No active management required.",
+    description: "Deposit once and you're done. Tethra supplies PLP liquidity on DeepBook Predict or lends on DeepBook Margin, fully on-chain. No active management required.",
     stats: { value: "1", label: "deposit to start" },
   },
   {
@@ -19,7 +19,7 @@ const features = [
     number: "03",
     title: "Conservative Exposure Caps",
     description: "Strict per-market caps and tenor limits bound the vault's risk. Defined-range positions are designed to limit drawdown.",
-    stats: { value: "15%", label: "high-water fee" },
+    stats: { value: "15%", label: "fee on profit" },
   },
   {
     number: "04",
@@ -174,7 +174,7 @@ export function FeaturesSection() {
               <p className={`text-xl text-muted-foreground leading-relaxed transition-all duration-1000 delay-200 ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}>
-                Deposit dUSDC once and the vault supplies PLP liquidity to DeepBook Predict with conservative caps. No active management.
+                Deposit once and Tethra puts it to work on DeepBook: PLP liquidity on Predict, or lending on Margin. No active management.
               </p>
             </div>
           </div>

@@ -3,9 +3,9 @@
 import { useEffect, useState, useRef } from "react";
 
 const regions = [
-  { name: "Move Vault", detail: "supply / withdraw", status: "deployed" },
+  { name: "Predict vault", detail: "PLP supply / redeem", status: "live" },
+  { name: "Margin vault", detail: "SUI + dUSDC lend", status: "live" },
   { name: "Keeper", detail: "auto-redeem", status: "live" },
-  { name: "Pricing Engine", detail: "SVI surface", status: "verified" },
   { name: "Sui Testnet", detail: "live deploy", status: "live" },
 ];
 
@@ -72,8 +72,8 @@ export function InfrastructureSection() {
               <p className={`mt-8 text-xl text-muted-foreground leading-relaxed max-w-lg transition-all duration-1000 delay-100 ${
                 isVisible ? "opacity-100" : "opacity-0"
               }`}>
-                A Move vault wraps predict supply and withdraw on-chain.
-                An off-chain TypeScript keeper handles the rest.
+                Move vaults supply liquidity to DeepBook Predict and Margin on-chain.
+                A TypeScript keeper redeems settled Predict positions.
               </p>
             </div>
           </div>
@@ -148,7 +148,7 @@ export function InfrastructureSection() {
                 <span className="text-2xl text-muted-foreground">to you</span>
               </div>
               <p className="text-muted-foreground max-w-md">
-                Depositors keep 85% of yield. A 15% performance fee, high-water-marked, with no management fee.
+                Depositors keep 85% of yield. A 15% performance fee on realized profit only, with no management fee.
               </p>
             </div>
           </div>
@@ -158,15 +158,15 @@ export function InfrastructureSection() {
             <div className={`p-8 border border-foreground/10 bg-foreground/[0.02] transition-all duration-700 delay-100 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              <span className="text-5xl lg:text-6xl font-display">~2%</span>
-              <span className="block text-sm text-muted-foreground mt-2">Max drawdown</span>
+              <span className="text-5xl lg:text-6xl font-display">2</span>
+              <span className="block text-sm text-muted-foreground mt-2">Vaults live</span>
             </div>
             
             <div className={`p-8 border border-foreground/10 bg-foreground/[0.02] transition-all duration-700 delay-200 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              <span className="text-5xl lg:text-6xl font-display">~1e-5</span>
-              <span className="block text-sm text-muted-foreground mt-2">Pricing match</span>
+              <span className="text-5xl lg:text-6xl font-display">0</span>
+              <span className="block text-sm text-muted-foreground mt-2">Management fee</span>
             </div>
           </div>
         </div>
