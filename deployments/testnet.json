@@ -16,5 +16,5 @@
     "deepbookPackage": "0xfb28c4cbc6865bd1c897d26aecbe1f8792d1509a20ffec692c800660cbec6982",
     "tokenPackage": "0x36dbef866a1d62bf7328989a10fb2f07d769f4ee587c0de4a0a256e57e0a58a8"
   },
-  "note": "Built from contracts/ with deepbookv3 deps pinned at rev 1159d79af33c70e09e406310e1d8f067832ede9d. To redeploy, set `published-at` on the direct deps (predict, dusdc) to the addresses above so the build links to the live protocol instead of republishing. Deposit/withdraw round-trip pending DUSDC test tokens."
+  "note": "Built from contracts/vault/ with deepbookv3 deps pinned at rev 1159d79af33c70e09e406310e1d8f067832ede9d. To redeploy, set `published-at` on the direct deps (predict, dusdc) to the addresses above so the build links to the live protocol instead of republishing. Deposit/withdraw round-trip pending DUSDC test tokens."
 }

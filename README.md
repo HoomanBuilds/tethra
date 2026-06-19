@@ -6,7 +6,8 @@ Positioning is honest and evidence-based: this is the safe, automated way to pro
 
 ## Structure
 
-- `contracts/` — Move vault package (deposit/withdraw, shares, performance fee, exposure cap) — deployed to testnet
+- `contracts/vault/` — Tier 1 Move vault package (deposit/withdraw, shares, performance fee, exposure cap), deployed to testnet
+- `contracts/lend/` — Tier 2 margin-lending vault package on DeepBook Margin (SUI)
 - `strategy/` — TypeScript: validated SVI pricing engine, backtests, risk overlays, hedge sim, economics, stress test
 - `web/` — Tethra landing site (Next.js, npm)
 - `keeper/` — redeem keeper bot (live on testnet)
@@ -17,7 +18,7 @@ The Move contract pulls DeepBook Predict via a git dependency (no vendored sourc
 ## Contract
 
 ```
-cd contracts
+cd contracts/vault
 sui move test
 ```
 

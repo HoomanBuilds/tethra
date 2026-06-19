@@ -19,7 +19,7 @@ BUILDING tethra_lend
 
 ## Package Location
 
-`contracts-lend/` at repo root.
+`contracts/lend/` at repo root.
 
 ## Working Move.toml
 
