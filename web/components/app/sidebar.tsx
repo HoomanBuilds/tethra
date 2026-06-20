@@ -3,37 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AccentDot } from "@/components/app/app-kit";
-
-const navGroups: { label?: string; items: { name: string; href: string }[] }[] = [
-  { items: [{ name: "Overview", href: "/app" }] },
-  {
-    label: "Earn",
-    items: [
-      { name: "Provide PLP liquidity", href: "/app/deposit" },
-      { name: "Lend on Margin", href: "/app/lend" },
-      { name: "Supply dUSDC", href: "/app/supply" },
-    ],
-  },
-  {
-    label: "Borrow",
-    items: [{ name: "Borrow against tPLP", href: "/app/borrow" }],
-  },
-  {
-    label: "Monitor",
-    items: [
-      { name: "Portfolio", href: "/app/portfolio" },
-      { name: "Analytics", href: "/app/analytics" },
-      { name: "PLP Risk", href: "/app/risk" },
-      { name: "Activity", href: "/app/activity" },
-    ],
-  },
-];
-
-function isActive(pathname: string, href: string) {
-  const base = href.split("#")[0];
-  if (base === "/app") return pathname === "/app";
-  return pathname === base || pathname.startsWith(`${base}/`);
-}
+import { navGroups, isActive } from "@/components/app/nav-links";
 
 export function Sidebar() {
   const pathname = usePathname();

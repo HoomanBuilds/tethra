@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 import { ConnectWallet } from "@/components/app/connect-wallet";
+import { MobileNav } from "@/components/app/mobile-nav";
 
 export function Topbar() {
   return (
     <header className="sticky top-0 z-30 h-16 border-b border-foreground/10 bg-background/70 backdrop-blur">
       <div className="flex items-center justify-between h-full px-6 lg:px-12">
-        <Link href="/app" className="flex items-center gap-2 lg:hidden">
-          <span className="font-display text-xl tracking-tight text-foreground">Tethra</span>
-          <span className="font-mono text-[10px] mt-0.5 text-muted-foreground">TM</span>
-        </Link>
-
-        <div className="hidden lg:block" />
+        <div className="flex items-center gap-2">
+          <MobileNav />
+          <Link href="/app" className="flex items-center gap-2 lg:hidden">
+            <span className="font-display text-xl tracking-tight text-foreground">Tethra</span>
+            <span className="font-mono text-[10px] mt-0.5 text-muted-foreground">TM</span>
+          </Link>
+        </div>
 
         <div className="flex items-center gap-4 lg:gap-6">
           <span className="hidden sm:flex items-center gap-2">
