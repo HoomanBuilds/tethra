@@ -5,6 +5,8 @@
   "scripts": {
     "dry": "tsx src/keeper.ts --dry",
     "start": "tsx src/keeper.ts",
+    "liquidator": "tsx src/liquidator.ts",
+    "liquidator:dry": "tsx src/liquidator.ts --dry",
     "roundtrip": "tsx src/roundtrip.ts",
     "lend": "tsx src/lend_roundtrip.ts"
   },
