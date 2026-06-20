@@ -37,8 +37,8 @@ deps = { std = "MoveStdlib", sui = "Sui" }
 [pinned.testnet.plp_vault]
 source = { root = true }
 use_environment = "testnet"
-manifest_digest = "280B41C1652F2E2FCEDE5F52CC499B49076C4B59D7D8E456DCDA65AAFDFA3BEC"
-deps = { deepbook = "deepbook", deepbook_predict = "deepbook_predict", dusdc = "dusdc", std = "MoveStdlib", sui = "Sui", token = "token_1" }
+manifest_digest = "DBD020FBFD0C74010BC9815B0AF8DBC211838C9371EBFB3299A874456DD5BE30"
+deps = { deepbook_predict = "deepbook_predict", dusdc = "dusdc", std = "MoveStdlib", sui = "Sui", token = "token_1" }
 
 [pinned.testnet.token]
 source = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/token", rev = "daa5a9514908968f11be1d0388f673e0ee1a5059" }
