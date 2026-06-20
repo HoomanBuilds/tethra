@@ -1,7 +1,7 @@
 module tethra_borrow_market::market;
 
 use plp_vault::vault::{Self, Vault, VAULT};
-use deepbook_predict::predict::{Self, Predict};
+use deepbook_predict::predict::Predict;
 use dusdc::dusdc::DUSDC;
 use sui::balance::{Self, Balance};
 use sui::clock::Clock;
@@ -325,4 +325,48 @@ public fun withdraw_collateral(m: &mut Market, vault: &Vault, amount: u64, clock
     };
     event::emit(CollateralWithdrawn { who, amount });
     coin::from_balance(m.collateral.split(amount), ctx)
+}
+
+public fun liquidate(m: &mut Market, borrower: address, vault: &mut Vault, predict: &mut Predict, clock: &Clock, ctx: &mut TxContext) {
+    assert!(object::id(vault) == m.vault_id, EWrongVault);
+    accrue(m, clock);
+    assert!(m.positions.contains(borrower), ENoPosition);
+    let cost_basis = vault::cost_basis(vault);
+    let total_shares = vault::total_shares(vault);
+    let index = m.borrow_index;
+    let (coll, shares) = { let p = m.positions.borrow(borrower); (p.collateral, p.borrow_shares) };
+    let debt = debt_of(shares, index);
+    let coll_value = collateral_value(coll, cost_basis, total_shares);
+    assert!(ltv_bps(debt, coll_value) >= m.liq_threshold_bps, ECannotLiquidate);
+
+    let tplp = coin::from_balance(m.collateral.split(coll), ctx);
+    let mut proceeds = vault::withdraw(vault, predict, tplp, clock, ctx);
+    let got = proceeds.value();
+    let (repay, penalty, surplus) = liquidation_split(got, debt, m.liq_penalty_bps);
+
+    m.reserve.join(proceeds.split(repay, ctx).into_balance());
+    m.total_borrow_shares = m.total_borrow_shares - shares;
+    if (penalty > 0) { transfer::public_transfer(proceeds.split(penalty, ctx), m.fee_treasury); };
+    if (got < debt) { event::emit(BadDebt { borrower, shortfall: debt - got }); };
+
+    let Position { collateral: _, borrow_shares: _ } = m.positions.remove(borrower);
+    event::emit(PositionLiquidated { borrower, repaid: repay, surplus });
+
+    if (proceeds.value() > 0) { transfer::public_transfer(proceeds, borrower); }
+    else { proceeds.destroy_zero(); };
+}
+
+public fun position_of(m: &Market, who: address): (u64, u64) {
+    if (m.positions.contains(who)) {
+        let p = m.positions.borrow(who);
+        (p.collateral, debt_of(p.borrow_shares, m.borrow_index))
+    } else { (0, 0) }
+}
+
+public fun health_bps(m: &Market, vault: &Vault, who: address): u64 {
+    if (!m.positions.contains(who)) return 0;
+    let p = m.positions.borrow(who);
+    let debt = debt_of(p.borrow_shares, m.borrow_index);
+    let value = collateral_value(p.collateral, vault::cost_basis(vault), vault::total_shares(vault));
+    ltv_bps(debt, value)
 }
