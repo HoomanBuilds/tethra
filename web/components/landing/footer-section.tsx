@@ -103,7 +103,7 @@ export function FooterSection() {
               </a>
 
               <p className="text-white/50 leading-relaxed mb-8 max-w-xs text-sm">
-                The safe, automated way to supply liquidity on DeepBook. Deposit once, earn net-of-fee yield from Predict and Margin.
+                The safe, automated way to earn and borrow on DeepBook. Deposit once for net-of-fee yield from Predict or Margin, and borrow against your vault shares.
               </p>
 
               <span className="inline-flex items-center gap-2 text-sm text-white/40">

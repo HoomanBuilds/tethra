@@ -74,7 +74,7 @@ export function IntegrationsSection() {
         <p className={`mt-8 text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto transition-all duration-1000 delay-100 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          Tethra composes with DeepBook Predict and Margin, runs on Sui, and accepts SUI or dUSDC. One deposit, fully on-chain.
+          Tethra composes with DeepBook Predict and Margin on Sui. Your vault shares (tPLP) compose further as collateral to borrow dUSDC against. One deposit, fully on-chain.
         </p>
       </div>
 
@@ -162,7 +162,7 @@ export function IntegrationsSection() {
         }`}>
           <div className="flex flex-wrap gap-12">
             {[
-              { value: "2", label: "Vaults live" },
+              { value: "3", label: "Live markets" },
               { value: "DeepBook", label: "Predict + Margin" },
               { value: "Permissionless", label: "Non-custodial" },
             ].map((stat) => (

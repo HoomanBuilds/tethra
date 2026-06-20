@@ -24,8 +24,8 @@ const securityFeatures = [
   },
   {
     icon: FileCheck,
-    title: "Bounded withdrawals",
-    description: "Limited by available on-chain liquidity.",
+    title: "Self-redeeming liquidation",
+    description: "Bad loans redeem collateral through the vault, no oracle.",
     image: "/images/permissions.jpg",
   },
 ];
@@ -84,7 +84,7 @@ export function SecuritySection() {
             isVisible ? "opacity-100" : "opacity-0"
           }`}>
             <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl">
-              Your principal stays in a trustless on-chain vault. Conservative risk controls keep exposure bounded at all times.
+              Your principal stays in trustless on-chain vaults. Conservative caps bound vault exposure, and the borrow market liquidates over-leveraged positions before they turn into bad debt.
             </p>
           </div>
         </div>

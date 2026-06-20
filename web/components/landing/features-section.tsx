@@ -6,7 +6,7 @@ const features = [
   {
     number: "01",
     title: "One-Deposit Vault",
-    description: "Deposit once and you're done. Tethra supplies PLP liquidity on DeepBook Predict or lends on DeepBook Margin, fully on-chain. No active management required.",
+    description: "Deposit once and you're done. Tethra supplies PLP liquidity on DeepBook Predict or lends on DeepBook Margin, and your vault shares can back a dUSDC loan. Fully on-chain, no active management required.",
     stats: { value: "1", label: "deposit to start" },
   },
   {
@@ -174,7 +174,7 @@ export function FeaturesSection() {
               <p className={`text-xl text-muted-foreground leading-relaxed transition-all duration-1000 delay-200 ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}>
-                Deposit once and Tethra puts it to work on DeepBook: PLP liquidity on Predict, or lending on Margin. No active management.
+                Deposit once and Tethra puts it to work on DeepBook: PLP liquidity on Predict, or lending on Margin. Your vault shares double as collateral you can borrow against. No active management.
               </p>
             </div>
           </div>

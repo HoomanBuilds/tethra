@@ -174,7 +174,7 @@ export function HeroSection() {
         >
           <span className="inline-flex items-center gap-3 text-sm font-mono text-white/60">
             <span className="w-8 h-px bg-white/30" />
-            Safe, automated liquidity vaults on DeepBook
+            Vaults, lending, and borrowing on DeepBook
           </span>
         </div>
         
@@ -206,8 +206,8 @@ export function HeroSection() {
         <div className="max-w-[1400px] mx-auto flex items-start gap-10 lg:gap-20">
           {[
             { value: "1 tx", label: "deposit to start earning" },
-            { value: "2", label: "vaults: Predict and Margin" },
-            { value: "15%", label: "fee on profit only" },
+            { value: "3", label: "markets: Predict, Margin, borrow" },
+            { value: "15%", label: "Predict vault fee, profit only" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col gap-2">
               <span className="text-3xl lg:text-4xl font-display text-white">{stat.value}</span>

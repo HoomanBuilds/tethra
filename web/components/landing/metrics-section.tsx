@@ -5,11 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 
 const metrics = [
   {
-    value: 2,
+    value: 3,
     suffix: "",
     prefix: "",
-    label: "Vaults live on Sui testnet",
-    sublabel: "Predict PLP + Margin lending",
+    label: "Markets live on Sui testnet",
+    sublabel: "Predict, Margin, and borrowing",
   },
   {
     value: 15,
@@ -356,7 +356,7 @@ export function MetricsSection() {
           {live ? (
             <span>PLP share price {live.plpSharePrice.toFixed(4)}</span>
           ) : (
-            <span>Predict PLP + Margin lending</span>
+            <span>Predict, Margin, and borrowing</span>
           )}
           {live ? (
             <span>Utilization {(live.utilization * 100).toFixed(2)}%</span>

@@ -8,8 +8,8 @@ const features = [
     description: "On-chain vaults with a typed keeper and tooling."
   },
   {
-    title: "Two live vaults",
-    description: "Predict PLP and Margin lending on Sui testnet."
+    title: "Three live markets",
+    description: "Predict, Margin, and tPLP borrowing on Sui testnet."
   },
   {
     title: "Verifiable on-chain",

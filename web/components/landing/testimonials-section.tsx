@@ -5,25 +5,25 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "Depositors keep 85% of realized profit. The fee applies only to new gains, never to your principal.",
-    author: "Fee model",
-    role: "Honest by design",
-    company: "Fee",
+    quote: "The Predict vault supplies PLP liquidity to DeepBook Predict, auto-compounds returns, and caps exposure. Depositors keep 85% of profit.",
+    author: "Predict vault",
+    role: "Tier 1, PLP liquidity",
+    company: "Predict",
     metric: { value: "85%", label: "You keep" },
   },
   {
-    quote: "The Predict vault supplies PLP liquidity to DeepBook Predict, auto-compounds returns, and caps exposure.",
-    author: "Predict vault",
-    role: "PLP liquidity, no active management",
-    company: "Predict",
-    metric: { value: "0", label: "Active management" },
-  },
-  {
-    quote: "The Margin vault lends SUI or dUSDC to DeepBook Margin pools. Yield is variable and paid by borrowers.",
+    quote: "The Margin vault lends SUI or dUSDC to DeepBook Margin pools. Yield is variable and paid by borrowers, with no performance fee.",
     author: "Margin vault",
-    role: "Variable yield, honest risk",
+    role: "Tier 2, variable yield",
     company: "Margin",
     metric: { value: "2", label: "Lend assets" },
+  },
+  {
+    quote: "The tPLP market lets you supply dUSDC to earn, or borrow against your vault shares. Unhealthy loans self-redeem through the vault.",
+    author: "Borrow market",
+    role: "Tier 3, supply and borrow",
+    company: "Borrow",
+    metric: { value: "50%", label: "Max LTV" },
   },
   {
     quote: "Principal stays in trustless on-chain vaults. You hold shares and withdraw any time at your share price.",

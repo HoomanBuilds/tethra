@@ -31,7 +31,7 @@ const steps = [
     number: "03",
     title: "Redeem",
     subtitle: "& withdraw",
-    description: "Withdraw any time at your share price, net of a profit-only fee. On Predict, a permissionless keeper clears settled positions.",
+    description: "Withdraw any time at your share price, net of a profit-only fee, or keep your shares and borrow dUSDC against them. On Predict, a permissionless keeper clears settled positions.",
     code: `keeper.redeem({
   vault: [settled],
   fields: ['shares', 'price', 'fee'],
