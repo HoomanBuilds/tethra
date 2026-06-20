@@ -5,6 +5,9 @@ import { getFullnodeUrl } from "@mysten/sui/client";
 export const NETWORK = "testnet" as const;
 export const RPC_URL = getFullnodeUrl("testnet");
 
+// Public DeepBook Predict indexer (read-only event/state surface).
+export const PREDICT_INDEXER = "https://predict-server.testnet.mystenlabs.com";
+
 export const PACKAGE =
   "0x2765b4a30258ef4660ec7d24fef8b0b32a700633c6dc1a57a80f988de6bc1d9e";
 export const VAULT_ID =

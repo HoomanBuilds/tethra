@@ -10,6 +10,7 @@ const navLinks = [
   { name: "Lend", href: "/app/lend" },
   { name: "Portfolio", href: "/app/portfolio" },
   { name: "Analytics", href: "/app/analytics" },
+  { name: "PLP Risk", href: "/app/risk" },
   { name: "Activity", href: "/app/activity" },
 ];
 
