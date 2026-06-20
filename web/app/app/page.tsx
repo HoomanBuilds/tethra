@@ -120,7 +120,7 @@ export default function VaultOverview() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mt-6">
-        <Panel className="lg:col-span-2 p-6 lg:p-8">
+        <Panel className="lg:col-span-2 p-6 lg:p-8 flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <Tag>PLP pool NAV, live from DeepBook Predict</Tag>
             {navSeries.length > 0 && navData?.changePct != null && (
@@ -130,9 +130,11 @@ export default function VaultOverview() {
             )}
           </div>
           {navSeries.length > 0 ? (
-            <TethraChart option={navOption} height={320} />
+            <div className="flex-1 min-h-[320px]">
+              <TethraChart option={navOption} height="100%" />
+            </div>
           ) : (
-            <div className="flex items-center justify-center h-[320px] text-sm text-muted-foreground font-mono">
+            <div className="flex-1 min-h-[320px] flex items-center justify-center text-sm text-muted-foreground font-mono">
               Loading live NAV…
             </div>
           )}
