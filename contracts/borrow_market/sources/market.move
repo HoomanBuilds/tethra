@@ -100,6 +100,32 @@ fun mul_div(a: u64, b: u64, c: u64): u64 {
     (((a as u128) * (b as u128)) / (c as u128)) as u64
 }
 
+public fun borrow_rate(util: u64, base_rate: u64, base_slope: u64, excess_slope: u64, optimal: u64): u64 {
+    if (util < optimal) {
+        base_rate + mul_div(util, base_slope, SCALE)
+    } else {
+        base_rate + mul_div(optimal, base_slope, SCALE) + mul_div(util - optimal, excess_slope, SCALE)
+    }
+}
+
+public fun accrue_index(index: u128, rate: u64, elapsed_ms: u64): u128 {
+    let growth = mul_div(rate, elapsed_ms, MS_PER_YEAR);
+    index + (index * (growth as u128)) / (SCALE as u128)
+}
+
+public fun utilization(reserve: u64, debt: u64): u64 {
+    let assets = reserve + debt;
+    if (assets == 0) 0 else mul_div(debt, SCALE, assets)
+}
+
+public fun debt_of(shares: u64, index: u128): u64 {
+    (((shares as u128) * index) / (SCALE as u128)) as u64
+}
+
+public fun shares_for_debt(amount: u64, index: u128): u64 {
+    (((amount as u128) * (SCALE as u128)) / index) as u64
+}
+
 public fun reserve_value(m: &Market): u64 { m.reserve.value() }
 public fun total_collateral(m: &Market): u64 { m.collateral.value() }
 public fun total_borrow_shares(m: &Market): u64 { m.total_borrow_shares }
