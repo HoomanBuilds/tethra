@@ -150,7 +150,7 @@ export function InfrastructureSection() {
                 <span className="text-2xl text-muted-foreground">to you</span>
               </div>
               <p className="text-muted-foreground max-w-md">
-                Predict vault depositors keep 85% of yield, with the 15% performance fee on realized profit only. Lending and borrowing earn market rates.
+                Vault depositors keep 85% of yield, with the 15% performance fee on realized profit only. The borrow market takes no supply fee.
               </p>
             </div>
           </div>

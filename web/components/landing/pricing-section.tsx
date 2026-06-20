@@ -20,7 +20,7 @@ const plans = [
   },
   {
     name: "Performance fee",
-    description: "Charged only on Predict vault profit",
+    description: "Charged only on realized vault profit",
     price: { monthly: 15, annual: 15 },
     features: [
       "15% of realized profit",
@@ -197,7 +197,7 @@ Fees on
             </span>
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#eca8d6]" />
-              Lending and borrowing at market rate
+              Borrow market takes no supply fee
             </span>
           </div>
           <a href="#" className="text-sm underline underline-offset-4 hover:text-foreground transition-colors">
