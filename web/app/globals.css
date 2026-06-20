@@ -90,6 +90,34 @@
   }
   html {
     scroll-behavior: smooth;
+    /* Firefox + modern Chromium */
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.94 0.005 90 / 0.22) transparent;
+  }
+
+  /* Custom themed scrollbar (WebKit / Chromium / Safari) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: oklch(0.94 0.005 90 / 0.20);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background-color 0.2s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.94 0.005 90 / 0.32);
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background-color: oklch(0.94 0.005 90 / 0.45);
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 
