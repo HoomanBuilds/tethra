@@ -56,5 +56,19 @@
       "linkedRegistry": "0x48d7640dfae2c6e9ceeada197a7a1643984b5a24c55a0c6c023dac77e0339f75",
       "deepbookMarginV1": "0xb8620c24c9ea1a4a41e79613d2b3d1d93648d1bb6f6b789a7c8f261c94110e4b"
     }
+  },
+  "borrowMarket": {
+    "publishDigest": "HZMY15iCVmMaFhhh6zFH6WYBrjYXE57CCF1oV86ebgkg",
+    "initializeDigest": "GTo9Ap8V1qpMzAYGSuG2W7frdWTpdEKxjvo8btj8MHVB",
+    "package": "0x2bfa7a256d2dcb170e8d63d211b822874aa701599615afd5ec94c2338b6cfddd",
+    "market": "0x06f2e438b20f78795eaccedbed96dbd41aeae8bec0feb8e6f6be4def95656145",
+    "adminCap": "0x30b2f6f655e0be81530b05fe8cfbea0577df4123659250d0687760f72767f636",
+    "upgradeCap": "0x873a49b800836725360ee1968054892d337e432a5221e6b984fa6691263fb9e3",
+    "coinMetadata": "0x691316de62d46bb94d5374c546b7a13777cdc71ad84b7f25f8cd699939eb8caa",
+    "tpusdcType": "0x2bfa7a256d2dcb170e8d63d211b822874aa701599615afd5ec94c2338b6cfddd::market::MARKET",
+    "vault": "0x21528665ba5731f9ffa2a7fe3024f87b77b86660a615118e2e3d1d150299aeb0",
+    "collateralType": "0x2765b4a30258ef4660ec7d24fef8b0b32a700633c6dc1a57a80f988de6bc1d9e::vault::VAULT",
+    "dusdcType": "0xe95040085976bfd54a1a07225cd46c8a2b4e8e2b6732f140a0fc49850ba73e1a::dusdc::DUSDC",
+    "note": "Open isolated tPLP/dUSDC lending market (Morpho-Blue-style). Supply dUSDC for tpUSDC; borrow dUSDC against tPLP at 50% max LTV, 80% liq threshold, 5% penalty. Self-redeeming liquidation via plp_vault::vault::withdraw. Initialized against the Tethra Predict vault 0x21528665. Reserve seeding + borrowing need DUSDC test tokens / vault deposits."
   }
 }
