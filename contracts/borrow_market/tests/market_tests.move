@@ -23,7 +23,7 @@ fun rate_above_kink_uses_excess_slope() {
 fun accrue_one_year_at_ten_pct() {
     // index 1e9, rate 10%, one full year -> +10%
     let i = market::accrue_index((SCALE as u128), 100_000_000, 31_536_000_000);
-    assert!(i == (1_100_000_000 as u128), 0);
+    assert!(i == 1_100_000_000u128, 0);
 }
 
 #[test]
@@ -40,7 +40,7 @@ fun utilization_basic() {
 
 #[test]
 fun debt_and_shares_roundtrip() {
-    let idx = (1_200_000_000 as u128); // index 1.2
+    let idx = 1_200_000_000u128; // index 1.2
     let shares = market::shares_for_debt(120, idx); // 120 / 1.2 = 100
     assert!(shares == 100, 0);
     assert!(market::debt_of(100, idx) == 120, 1);

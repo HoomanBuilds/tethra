@@ -18,7 +18,6 @@ const DEFAULT_BASE_RATE: u64 = 45_000_000;
 const DEFAULT_BASE_SLOPE: u64 = 80_000_000;
 const DEFAULT_EXCESS_SLOPE: u64 = 4_500_000_000;
 const DEFAULT_OPTIMAL_UTIL: u64 = 800_000_000;
-const DEFAULT_PROTOCOL_SPREAD: u64 = 100_000_000;
 const DEFAULT_MAX_LTV_BPS: u64 = 5_000;
 const DEFAULT_LIQ_THRESHOLD_BPS: u64 = 8_000;
 const DEFAULT_LIQ_PENALTY_BPS: u64 = 500;
@@ -55,7 +54,6 @@ public struct Market has key {
     base_slope: u64,
     excess_slope: u64,
     optimal_util: u64,
-    protocol_spread: u64,
     max_ltv_bps: u64,
     liq_threshold_bps: u64,
     liq_penalty_bps: u64,
@@ -97,7 +95,6 @@ fun init(witness: MARKET, ctx: &mut TxContext) {
         base_slope: DEFAULT_BASE_SLOPE,
         excess_slope: DEFAULT_EXCESS_SLOPE,
         optimal_util: DEFAULT_OPTIMAL_UTIL,
-        protocol_spread: DEFAULT_PROTOCOL_SPREAD,
         max_ltv_bps: DEFAULT_MAX_LTV_BPS,
         liq_threshold_bps: DEFAULT_LIQ_THRESHOLD_BPS,
         liq_penalty_bps: DEFAULT_LIQ_PENALTY_BPS,
@@ -221,13 +218,12 @@ public fun set_risk_params(_: &AdminCap, m: &mut Market, max_ltv_bps: u64, liq_t
     m.liq_penalty_bps = liq_penalty_bps;
 }
 
-public fun set_interest_params(_: &AdminCap, m: &mut Market, base_rate: u64, base_slope: u64, excess_slope: u64, optimal_util: u64, protocol_spread: u64) {
-    assert!(optimal_util < SCALE && protocol_spread < SCALE, EBadParams);
+public fun set_interest_params(_: &AdminCap, m: &mut Market, base_rate: u64, base_slope: u64, excess_slope: u64, optimal_util: u64) {
+    assert!(optimal_util < SCALE, EBadParams);
     m.base_rate = base_rate;
     m.base_slope = base_slope;
     m.excess_slope = excess_slope;
     m.optimal_util = optimal_util;
-    m.protocol_spread = protocol_spread;
 }
 
 public fun set_fee_treasury(_: &AdminCap, m: &mut Market, who: address) {
