@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 const regions = [
   { name: "Predict vault", detail: "PLP supply / redeem", status: "live" },
   { name: "Margin vault", detail: "SUI + dUSDC lend", status: "live" },
+  { name: "Borrow market", detail: "tPLP collateral", status: "live" },
   { name: "Keeper", detail: "auto-redeem", status: "live" },
   { name: "Sui Testnet", detail: "live deploy", status: "live" },
 ];
@@ -73,7 +74,8 @@ export function InfrastructureSection() {
                 isVisible ? "opacity-100" : "opacity-0"
               }`}>
                 Move vaults supply liquidity to DeepBook Predict and Margin on-chain.
-                A TypeScript keeper redeems settled Predict positions.
+                A TypeScript keeper redeems settled Predict positions. Vault shares
+                double as collateral: borrow dUSDC against them in an isolated market.
               </p>
             </div>
           </div>
@@ -172,7 +174,7 @@ export function InfrastructureSection() {
         </div>
 
         {/* Region list */}
-        <div className={`mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 transition-all duration-1000 delay-300 ${
+        <div className={`mt-12 grid grid-cols-2 lg:grid-cols-5 gap-4 transition-all duration-1000 delay-300 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
           {regions.map((region, index) => (
