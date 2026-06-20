@@ -62,6 +62,15 @@ public struct Market has key {
     fee_treasury: address,
 }
 
+public struct Supplied has copy, drop { supplier: address, amount: u64, shares: u64 }
+public struct Unsupplied has copy, drop { supplier: address, amount: u64, shares: u64 }
+public struct Borrowed has copy, drop { who: address, amount: u64, debt: u64 }
+public struct Repaid has copy, drop { who: address, amount: u64, debt: u64 }
+public struct CollateralAdded has copy, drop { who: address, amount: u64 }
+public struct CollateralWithdrawn has copy, drop { who: address, amount: u64 }
+public struct PositionLiquidated has copy, drop { borrower: address, repaid: u64, surplus: u64 }
+public struct BadDebt has copy, drop { borrower: address, shortfall: u64 }
+
 fun init(witness: MARKET, ctx: &mut TxContext) {
     let (treasury, metadata) = coin::create_currency(
         witness,
@@ -156,3 +165,71 @@ public fun total_collateral(m: &Market): u64 { m.collateral.value() }
 public fun total_borrow_shares(m: &Market): u64 { m.total_borrow_shares }
 public fun borrow_index(m: &Market): u128 { m.borrow_index }
 public fun supply_total(m: &Market): u64 { coin::total_supply(&m.supply_treasury) }
+
+public fun total_debt(m: &Market): u64 { debt_of(m.total_borrow_shares, m.borrow_index) }
+public fun total_assets(m: &Market): u64 { m.reserve.value() + total_debt(m) }
+
+public fun accrue(m: &mut Market, clock: &Clock) {
+    let now = clock.timestamp_ms();
+    let elapsed = now - m.last_accrued_ms;
+    if (elapsed > 0 && m.total_borrow_shares > 0 && m.last_accrued_ms > 0) {
+        let util = utilization(m.reserve.value(), total_debt(m));
+        let rate = borrow_rate(util, m.base_rate, m.base_slope, m.excess_slope, m.optimal_util);
+        m.borrow_index = accrue_index(m.borrow_index, rate, elapsed);
+    };
+    m.last_accrued_ms = now;
+}
+
+public fun supply(m: &mut Market, coin: Coin<DUSDC>, clock: &Clock, ctx: &mut TxContext): Coin<MARKET> {
+    accrue(m, clock);
+    let amount = coin.value();
+    assert!(amount > 0, EZeroAmount);
+    let shares = preview_supply(amount, coin::total_supply(&m.supply_treasury), total_assets(m));
+    m.reserve.join(coin.into_balance());
+    event::emit(Supplied { supplier: ctx.sender(), amount, shares });
+    coin::mint(&mut m.supply_treasury, shares, ctx)
+}
+
+public fun unsupply(m: &mut Market, shares: Coin<MARKET>, clock: &Clock, ctx: &mut TxContext): Coin<DUSDC> {
+    accrue(m, clock);
+    let s = shares.value();
+    assert!(s > 0, EZeroAmount);
+    let amount = preview_unsupply(s, coin::total_supply(&m.supply_treasury), total_assets(m));
+    assert!(amount <= m.reserve.value(), EInsufficientLiquidity);
+    coin::burn(&mut m.supply_treasury, shares);
+    event::emit(Unsupplied { supplier: ctx.sender(), amount, shares: s });
+    coin::from_balance(m.reserve.split(amount), ctx)
+}
+
+public fun initialize(_: &AdminCap, m: &mut Market, vault: &Vault) {
+    m.vault_id = object::id(vault);
+}
+
+public fun seed_reserve(_: &AdminCap, m: &mut Market, coin: Coin<DUSDC>) {
+    m.reserve.join(coin.into_balance());
+}
+
+public fun withdraw_reserve(_: &AdminCap, m: &mut Market, amount: u64, ctx: &mut TxContext): Coin<DUSDC> {
+    assert!(amount <= m.reserve.value(), EInsufficientReserve);
+    coin::from_balance(m.reserve.split(amount), ctx)
+}
+
+public fun set_risk_params(_: &AdminCap, m: &mut Market, max_ltv_bps: u64, liq_threshold_bps: u64, liq_penalty_bps: u64) {
+    assert!(max_ltv_bps < liq_threshold_bps && liq_threshold_bps < BPS && liq_penalty_bps <= 1_000, EBadParams);
+    m.max_ltv_bps = max_ltv_bps;
+    m.liq_threshold_bps = liq_threshold_bps;
+    m.liq_penalty_bps = liq_penalty_bps;
+}
+
+public fun set_interest_params(_: &AdminCap, m: &mut Market, base_rate: u64, base_slope: u64, excess_slope: u64, optimal_util: u64, protocol_spread: u64) {
+    assert!(optimal_util < SCALE && protocol_spread < SCALE, EBadParams);
+    m.base_rate = base_rate;
+    m.base_slope = base_slope;
+    m.excess_slope = excess_slope;
+    m.optimal_util = optimal_util;
+    m.protocol_spread = protocol_spread;
+}
+
+public fun set_fee_treasury(_: &AdminCap, m: &mut Market, who: address) {
+    m.fee_treasury = who;
+}
