@@ -4,20 +4,35 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AccentDot } from "@/components/app/app-kit";
 
-const navLinks = [
-  { name: "Overview", href: "/app" },
-  { name: "Deposit", href: "/app/deposit" },
-  { name: "Lend", href: "/app/lend" },
-  { name: "Borrow", href: "/app/borrow" },
-  { name: "Portfolio", href: "/app/portfolio" },
-  { name: "Analytics", href: "/app/analytics" },
-  { name: "PLP Risk", href: "/app/risk" },
-  { name: "Activity", href: "/app/activity" },
+const navGroups: { label?: string; items: { name: string; href: string }[] }[] = [
+  { items: [{ name: "Overview", href: "/app" }] },
+  {
+    label: "Earn",
+    items: [
+      { name: "Provide PLP liquidity", href: "/app/deposit" },
+      { name: "Lend on Margin", href: "/app/lend" },
+      { name: "Supply dUSDC", href: "/app/supply" },
+    ],
+  },
+  {
+    label: "Borrow",
+    items: [{ name: "Borrow against tPLP", href: "/app/borrow" }],
+  },
+  {
+    label: "Monitor",
+    items: [
+      { name: "Portfolio", href: "/app/portfolio" },
+      { name: "Analytics", href: "/app/analytics" },
+      { name: "PLP Risk", href: "/app/risk" },
+      { name: "Activity", href: "/app/activity" },
+    ],
+  },
 ];
 
 function isActive(pathname: string, href: string) {
-  if (href === "/app") return pathname === "/app";
-  return pathname === href || pathname.startsWith(`${href}/`);
+  const base = href.split("#")[0];
+  if (base === "/app") return pathname === "/app";
+  return pathname === base || pathname.startsWith(`${base}/`);
 }
 
 export function Sidebar() {
@@ -30,24 +45,33 @@ export function Sidebar() {
         <span className="font-mono text-[10px] mt-1 text-muted-foreground">TM</span>
       </Link>
 
-      <nav className="flex-1 px-3 py-6">
-        {navLinks.map((link) => {
-          const active = isActive(pathname, link.href);
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
-                active
-                  ? "bg-foreground/[0.04] text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/[0.02]"
-              }`}
-            >
-              <AccentDot active={active} />
-              {link.name}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 px-3 py-6 flex flex-col gap-6 overflow-y-auto">
+        {navGroups.map((group, gi) => (
+          <div key={group.label ?? `g${gi}`} className="flex flex-col gap-1">
+            {group.label && (
+              <span className="px-3 pb-1 text-[10px] font-mono uppercase tracking-wider text-muted-foreground/60">
+                {group.label}
+              </span>
+            )}
+            {group.items.map((link) => {
+              const active = isActive(pathname, link.href);
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors ${
+                    active
+                      ? "bg-foreground/[0.04] text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/[0.02]"
+                  }`}
+                >
+                  <AccentDot active={active} />
+                  {link.name}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       <div className="px-6 py-6 border-t border-foreground/10 flex flex-col gap-3">
