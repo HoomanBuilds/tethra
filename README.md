@@ -10,7 +10,7 @@ Tethra is a set of trustless, one-deposit liquidity vaults built on [DeepBook](h
 
 There are three products, and they compose:
 
-- **Tier 1, the Predict PLP vault.** Supplies risk-managed PLP (pool-liquidity-provider) liquidity that underwrites BTC binary markets on DeepBook Predict, auto-compounds, and caps exposure to bound drawdown. A keeper redeems settled positions. Depositors earn net-of-fee yield; the vault takes a 15% performance fee on profit only.
+- **Tier 1, the Predict PLP vault.** Supplies risk-managed PLP (pool-liquidity-provider) liquidity that underwrites BTC binary positions and vertical ranges on DeepBook Predict, and auto-compounds. Exposure is bounded by Predict's protocol-level cap; a keeper redeems settled positions. Depositors earn net-of-fee yield; the vault takes a 15% performance fee on profit only.
 - **Tier 2, the Margin lending vault.** Supplies SUI or DBUSDC (DeepBook Margin's stablecoin, distinct from the Predict dUSDC) to DeepBook Margin lending pools and earns variable yield paid by margin traders. The same trustless wrapper as Tier 1 (shares, deposit cap, 15% profit-only fee, no management fee), a real money-market yield, and no keeper needed.
 - **Tier 3, the tPLP/dUSDC borrow market.** An open, isolated lending market (Morpho-Blue style): supply dUSDC to earn, or lock your Tier 1 vault shares (tPLP) as collateral and borrow dUSDC against them. Liquidations are self-redeeming, they redeem the borrower's tPLP back through the Tier 1 vault, so no oracle and no external liquidity are needed.
 
@@ -56,9 +56,9 @@ Put together: one dUSDC deposit becomes a share coin in a trustless vault; that 
 
 ## Why It Exists
 
-Providing liquidity on DeepBook Predict is not a passive job. Underwriting binary markets means pricing them, sizing exposure so a bad tail does not wipe you out, supplying and withdrawing PLP liquidity at the right times, and redeeming positions once they settle. Done by hand it is constant, error-prone work, and done naively it is a good way to lose money to the tail.
+Providing liquidity on DeepBook Predict is not a passive job. Underwriting these markets (binary positions and vertical ranges) means pricing them, sizing exposure so a bad tail does not wipe you out, supplying and withdrawing PLP liquidity at the right times, and redeeming positions once they settle. Done by hand it is constant, error-prone work, and done naively it is a good way to lose money to the tail.
 
-Tethra wraps that work in a single deposit. You send dUSDC once, the vault supplies risk-managed PLP liquidity under hard exposure caps, a keeper redeems settled positions for everyone, and your share price reflects the result, net of a fee that is only ever charged on profit. The whole thing is a Move contract with no admin able to touch your principal.
+Tethra wraps that work in a single deposit. You send dUSDC once, the vault supplies risk-managed PLP liquidity (sitting behind Predict's protocol exposure cap), a keeper redeems settled positions for everyone, and your share price reflects the result, net of a fee that is only ever charged on profit. The whole thing is a Move contract with no admin able to touch your principal.
 
 The design is evidence-based, not aspirational. The Tier 1 backtest (in `strategy/`) shows the house edge on these markets is thin and tail-dominated, that spot delta-hedging the binaries is counterproductive, and that the real tail is a rally rather than a crash. So the vault does not promise a fat yield; it controls risk with exposure limits and lets the business scale with trading volume.
 
@@ -70,7 +70,7 @@ Tier 2 was added only after two findings: that DeepBook Margin's supply and with
 
 ### Tier 1: The Predict PLP Vault
 
-`plp_vault::vault` is the flagship. You call `deposit` with a `Coin<DUSDC>` and receive `Coin<VAULT>` shares, the `tPLP` coin ("Tethra Predict Vault Share"), that track your slice of the pool; you `withdraw` shares for dUSDC at any time. Internally the vault supplies PLP liquidity to a DeepBook Predict pool, valued at a conservative cost-basis floor. Share accounting uses a virtual-offset to guard against first-deposit share attacks and overflow-safe math so the ledger never silently rounds. A 15% performance fee (`DEFAULT_FEE_BPS = 1_500`) is charged on realized profit at withdrawal, never on principal and never without new gains, so 85% of yield stays with depositors. There is no management fee, deposit fee, or lock-up.
+`plp_vault::vault` is the flagship. You call `deposit` with a `Coin<DUSDC>` and receive `Coin<VAULT>` shares, the `tPLP` coin ("Tethra Predict Vault Share"), that track your slice of the pool; you `withdraw` shares for dUSDC at any time. Internally the vault supplies PLP liquidity to a DeepBook Predict pool; PLP redeems at the protocol's mark-to-market vault NAV (vault balance minus open mark-to-market liability). Share accounting uses a virtual-offset to guard against first-deposit share attacks and overflow-safe math so the ledger never silently rounds. A 15% performance fee (`DEFAULT_FEE_BPS = 1_500`) is charged on realized profit at withdrawal, never on principal and never without new gains, so 85% of yield stays with depositors. There is no management fee, deposit fee, or lock-up.
 
 ### Tier 2: The Margin Lending Vault
 
@@ -78,7 +78,7 @@ Tier 2 was added only after two findings: that DeepBook Margin's supply and with
 
 ### Tier 3: The tPLP Borrow Market
 
-`tethra_borrow_market::market` is an open, isolated money market with a single collateral (tPLP, the Tier 1 share) and a single loan asset (dUSDC). Anyone can `supply` dUSDC and receive `tpUSDC` shares that earn interest; suppliers receive all of the borrow interest. Anyone can lock tPLP and `borrow` dUSDC against it up to a 50% max LTV, valued at the vault cost-basis floor with no oracle. Interest accrues on a kinked utilization curve. Past an 80% LTV threshold a position is liquidatable, and liquidation is **self-redeeming**: the market pulls the borrower's tPLP, redeems it through `plp_vault::vault::withdraw`, repays the debt, keeps a 5% penalty for the protocol, and returns the surplus to the borrower. No swaps, no external liquidity, and no liquidator capital are required.
+`tethra_borrow_market::market` is an open, isolated money market with a single collateral (tPLP, the Tier 1 share) and a single loan asset (dUSDC). Anyone can `supply` dUSDC and receive `tpUSDC` shares that earn interest; suppliers receive all of the borrow interest. Anyone can lock tPLP and `borrow` dUSDC against it up to a 50% max LTV, valued at the vault cost-basis floor with no oracle. Interest accrues on a kinked utilization curve. Past an 80% LTV threshold a position is liquidatable, and liquidation is **self-redeeming**: the market pulls the borrower's tPLP, redeems it through `plp_vault::vault::withdraw`, repays the debt, keeps a 5% penalty for the protocol, and returns the surplus to the borrower. No swaps, no external liquidity, and no liquidator capital are required. Because the redemption routes through Predict, a liquidation depends on the Predict vault's available coverage and can revert if the house is at its max-payout limit.
 
 ### The Keeper
 
@@ -142,7 +142,7 @@ All objects are live on **Sui testnet** (chain id `4c78adac`). Explorer: https:/
 | Thing | ID |
 | ----- | -- |
 | DeepBook Predict package | `0xf5ea2b3749c65d6e56507cc35388719aadb28f9cab873696a2f8687f5c785138` |
-| DeepBook Predict manager | `0xc8736204d12f0a7277c86388a68bf8a194b0a14c5538ad13f22cbd8e2a38028a` |
+| DeepBook Predict object | `0xc8736204d12f0a7277c86388a68bf8a194b0a14c5538ad13f22cbd8e2a38028a` |
 | dUSDC (Predict) type | `0xe95040085976bfd54a1a07225cd46c8a2b4e8e2b6732f140a0fc49850ba73e1a::dusdc::DUSDC` |
 | DeepBook package | `0xfb28c4cbc6865bd1c897d26aecbe1f8792d1509a20ffec692c800660cbec6982` |
 | Margin registry | `0x48d7640dfae2c6e9ceeada197a7a1643984b5a24c55a0c6c023dac77e0339f75` |
