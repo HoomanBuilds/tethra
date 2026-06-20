@@ -72,3 +72,30 @@ fun ltv_bps_basic() {
     assert!(market::ltv_bps(800, 1000) == 8_000, 1); // 80%
     assert!(market::ltv_bps(1, 0) == 10_001, 2); // zero collateral -> over-cap sentinel
 }
+
+#[test]
+fun liquidation_healthy_proceeds_repay_penalty_surplus() {
+    // proceeds 1250, debt 1000, penalty 5% -> repay 1000, penalty 50, surplus 200
+    let (repay, penalty, surplus) = market::liquidation_split(1250, 1000, 500);
+    assert!(repay == 1000, 0);
+    assert!(penalty == 50, 1);
+    assert!(surplus == 200, 2);
+}
+
+#[test]
+fun liquidation_bad_debt_repays_what_it_can() {
+    // proceeds 900, debt 1000 -> repay 900, penalty 0, surplus 0 (bad debt 100)
+    let (repay, penalty, surplus) = market::liquidation_split(900, 1000, 500);
+    assert!(repay == 900, 0);
+    assert!(penalty == 0, 1);
+    assert!(surplus == 0, 2);
+}
+
+#[test]
+fun liquidation_penalty_capped_by_leftover() {
+    // proceeds 1020, debt 1000, want penalty 50 but only 20 left -> penalty 20, surplus 0
+    let (repay, penalty, surplus) = market::liquidation_split(1020, 1000, 500);
+    assert!(repay == 1000, 0);
+    assert!(penalty == 20, 1);
+    assert!(surplus == 0, 2);
+}

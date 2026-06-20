@@ -142,6 +142,15 @@ public fun ltv_bps(debt_value: u64, coll_value: u64): u64 {
     if (coll_value == 0) BPS + 1 else mul_div(debt_value, BPS, coll_value)
 }
 
+public fun liquidation_split(proceeds: u64, debt: u64, penalty_bps: u64): (u64, u64, u64) {
+    let repay = if (proceeds < debt) proceeds else debt;
+    let after_repay = proceeds - repay;
+    let want_penalty = mul_div(debt, penalty_bps, BPS);
+    let penalty = if (want_penalty < after_repay) want_penalty else after_repay;
+    let surplus = after_repay - penalty;
+    (repay, penalty, surplus)
+}
+
 public fun reserve_value(m: &Market): u64 { m.reserve.value() }
 public fun total_collateral(m: &Market): u64 { m.collateral.value() }
 public fun total_borrow_shares(m: &Market): u64 { m.total_borrow_shares }
