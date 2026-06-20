@@ -2,6 +2,7 @@
 name = "plp_vault"
 edition = "2024.beta"
 version = "0.0.1"
+published-at = "0x2765b4a30258ef4660ec7d24fef8b0b32a700633c6dc1a57a80f988de6bc1d9e"
 
 [dependencies]
 deepbook_predict = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/predict", rev = "1159d79af33c70e09e406310e1d8f067832ede9d" }
@@ -9,4 +10,4 @@ dusdc = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packag
 token = { git = "https://github.com/MystenLabs/deepbookv3.git", subdir = "packages/token", rev = "5411ef3aa93f7722409b2a85047baa3d4d830c07", override = true }
 
 [addresses]
-plp_vault = "0x0"
+plp_vault = "0x2765b4a30258ef4660ec7d24fef8b0b32a700633c6dc1a57a80f988de6bc1d9e"
