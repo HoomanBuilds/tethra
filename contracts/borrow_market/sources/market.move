@@ -233,3 +233,96 @@ public fun set_interest_params(_: &AdminCap, m: &mut Market, base_rate: u64, bas
 public fun set_fee_treasury(_: &AdminCap, m: &mut Market, who: address) {
     m.fee_treasury = who;
 }
+
+public fun add_collateral(m: &mut Market, vault: &Vault, collateral: Coin<VAULT>, ctx: &mut TxContext) {
+    assert!(object::id(vault) == m.vault_id, EWrongVault);
+    let amount = collateral.value();
+    assert!(amount > 0, EZeroAmount);
+    m.collateral.join(collateral.into_balance());
+    let who = ctx.sender();
+    if (m.positions.contains(who)) {
+        let p = m.positions.borrow_mut(who);
+        p.collateral = p.collateral + amount;
+    } else {
+        m.positions.add(who, Position { collateral: amount, borrow_shares: 0 });
+    };
+    event::emit(CollateralAdded { who, amount });
+}
+
+public fun borrow(m: &mut Market, vault: &Vault, amount: u64, clock: &Clock, ctx: &mut TxContext): Coin<DUSDC> {
+    assert!(object::id(vault) == m.vault_id, EWrongVault);
+    assert!(amount > 0, EZeroAmount);
+    accrue(m, clock);
+    assert!(m.reserve.value() >= amount, EInsufficientReserve);
+    let who = ctx.sender();
+    assert!(m.positions.contains(who), ENoPosition);
+
+    let cost_basis = vault::cost_basis(vault);
+    let total_shares = vault::total_shares(vault);
+    let index = m.borrow_index;
+    let new_shares = shares_for_debt(amount, index);
+
+    let (coll, old_shares) = { let p = m.positions.borrow(who); (p.collateral, p.borrow_shares) };
+    let debt = debt_of(old_shares + new_shares, index);
+    let coll_value = collateral_value(coll, cost_basis, total_shares);
+    assert!(ltv_bps(debt, coll_value) <= m.max_ltv_bps, EExceedsLtv);
+
+    { let p = m.positions.borrow_mut(who); p.borrow_shares = old_shares + new_shares; };
+    m.total_borrow_shares = m.total_borrow_shares + new_shares;
+    event::emit(Borrowed { who, amount, debt });
+    coin::from_balance(m.reserve.split(amount), ctx)
+}
+
+public fun repay(m: &mut Market, coin: Coin<DUSDC>, clock: &Clock, ctx: &mut TxContext): Coin<DUSDC> {
+    accrue(m, clock);
+    let who = ctx.sender();
+    assert!(m.positions.contains(who), ENoPosition);
+    let index = m.borrow_index;
+    let (old_shares, coll) = { let p = m.positions.borrow(who); (p.borrow_shares, p.collateral) };
+    let debt = debt_of(old_shares, index);
+
+    let mut pay = coin;
+    let pay_amount = pay.value();
+    let applied = if (pay_amount > debt) debt else pay_amount;
+    let shares_repaid = shares_for_debt(applied, index);
+    let shares_repaid = if (shares_repaid > old_shares) old_shares else shares_repaid;
+
+    m.reserve.join(pay.split(applied, ctx).into_balance());
+    let remaining_shares = old_shares - shares_repaid;
+    m.total_borrow_shares = m.total_borrow_shares - shares_repaid;
+
+    if (remaining_shares == 0 && coll == 0) {
+        let Position { collateral: _, borrow_shares: _ } = m.positions.remove(who);
+    } else {
+        let p = m.positions.borrow_mut(who);
+        p.borrow_shares = remaining_shares;
+    };
+    event::emit(Repaid { who, amount: applied, debt: debt_of(remaining_shares, index) });
+    pay
+}
+
+public fun withdraw_collateral(m: &mut Market, vault: &Vault, amount: u64, clock: &Clock, ctx: &mut TxContext): Coin<VAULT> {
+    assert!(object::id(vault) == m.vault_id, EWrongVault);
+    assert!(amount > 0, EZeroAmount);
+    accrue(m, clock);
+    let who = ctx.sender();
+    assert!(m.positions.contains(who), ENoPosition);
+    let cost_basis = vault::cost_basis(vault);
+    let total_shares = vault::total_shares(vault);
+    let index = m.borrow_index;
+    let (coll, shares) = { let p = m.positions.borrow(who); (p.collateral, p.borrow_shares) };
+    assert!(amount <= coll, EInsufficientReserve);
+    let remaining_coll = coll - amount;
+    let debt = debt_of(shares, index);
+    let coll_value = collateral_value(remaining_coll, cost_basis, total_shares);
+    assert!(debt == 0 || ltv_bps(debt, coll_value) <= m.max_ltv_bps, EExceedsLtv);
+
+    if (remaining_coll == 0 && shares == 0) {
+        let Position { collateral: _, borrow_shares: _ } = m.positions.remove(who);
+    } else {
+        let p = m.positions.borrow_mut(who);
+        p.collateral = remaining_coll;
+    };
+    event::emit(CollateralWithdrawn { who, amount });
+    coin::from_balance(m.collateral.split(amount), ctx)
+}
