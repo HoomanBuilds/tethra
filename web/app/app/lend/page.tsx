@@ -82,7 +82,7 @@ function AssetToggle({
         className={`${base} ${value === "dusdc" ? active : inactive} border-l-0`}
         onClick={() => onChange("dusdc")}
       >
-        dUSDC
+        DBUSDC
       </button>
     </div>
   );
@@ -143,7 +143,7 @@ export default function LendPage() {
 
   const { util, supplyApy } = pool ? computeApy(pool) : { util: 0, supplyApy: 0 };
 
-  // Share coin decimals equal the asset decimals (tlSUI 9dp, tldUSDC 6dp).
+  // Share coin decimals equal the asset decimals (tlSUI 9dp, tlDBUSDC 6dp).
   const yourShares = fromUnits(shareBalance, asset.decimals);
   const totalShares = vaultState ? vaultState.totalShares : 0n;
   const shareFraction =

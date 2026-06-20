@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 
 const regions = [
   { name: "Predict vault", detail: "PLP supply / redeem", status: "live" },
-  { name: "Margin vault", detail: "SUI + dUSDC lend", status: "live" },
+  { name: "Margin vault", detail: "SUI + DBUSDC lend", status: "live" },
   { name: "Borrow market", detail: "tPLP collateral", status: "live" },
   { name: "Keeper", detail: "auto-redeem", status: "live" },
   { name: "Sui Testnet", detail: "live deploy", status: "live" },

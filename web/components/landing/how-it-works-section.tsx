@@ -7,7 +7,7 @@ const steps = [
     number: "01",
     title: "Deposit",
     subtitle: "once",
-    description: "Send SUI or dUSDC to the vault a single time. You receive shares; no further action or active management is required.",
+    description: "Send dUSDC, SUI, or DBUSDC to the vault a single time. You receive shares; no further action or active management is required.",
     code: `const vault = new Vault({
   asset: ['SUI', 'dUSDC'],
   action: 'deposit',

@@ -12,7 +12,7 @@ const testimonials = [
     metric: { value: "85%", label: "You keep" },
   },
   {
-    quote: "The Margin vault lends SUI or dUSDC to DeepBook Margin pools. Yield is variable, paid by borrowers, net of the same profit-only fee.",
+    quote: "The Margin vault lends SUI or DBUSDC to DeepBook Margin pools. Yield is variable, paid by borrowers, net of the same profit-only fee.",
     author: "Margin vault",
     role: "Tier 2, variable yield",
     company: "Margin",

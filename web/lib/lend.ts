@@ -49,7 +49,7 @@ export const LEND_ASSETS: Record<"sui" | "dusdc", LendAsset> = {
     assetType:
       "0xf7152c05930480cd740d7311b5b8b45c6f488e3a53a11c3f74a6fac36a52e0d7::DBUSDC::DBUSDC",
     decimals: 6,
-    symbol: "dUSDC",
+    symbol: "DBUSDC",
     isGasToken: false,
   },
 };
