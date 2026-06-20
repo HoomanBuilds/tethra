@@ -9,6 +9,7 @@
     "verify": "tsx src/sim/verify.ts",
     "econ": "tsx src/sim/econ.ts",
     "stress": "tsx src/sim/stress.ts",
+    "leveraged": "tsx src/sim/leveraged_plp.ts",
     "validate": "tsx src/svi/validate.ts"
   },
   "devDependencies": {
