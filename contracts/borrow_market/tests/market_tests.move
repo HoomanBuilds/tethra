@@ -45,3 +45,30 @@ fun debt_and_shares_roundtrip() {
     assert!(shares == 100, 0);
     assert!(market::debt_of(100, idx) == 120, 1);
 }
+
+#[test]
+fun collateral_value_is_cost_basis_ratio() {
+    assert!(market::collateral_value(1000, 1002, 1000) == 1002, 0);
+    assert!(market::collateral_value(500, 1002, 1000) == 501, 1);
+    assert!(market::collateral_value(1, 0, 0) == 0, 2);
+}
+
+#[test]
+fun first_supply_is_one_to_one() {
+    assert!(market::preview_supply(1_000_000, 0, 0) == 1_000_000, 0);
+}
+
+#[test]
+fun supply_unsupply_roundtrip() {
+    // assets > supply (interest accrued) -> shares worth slightly more
+    let shares = market::preview_supply(1_000_000, 2_000_000, 2_200_000);
+    let back = market::preview_unsupply(shares, 2_000_000, 2_200_000);
+    assert!(back <= 1_000_000 && back >= 999_990, 0);
+}
+
+#[test]
+fun ltv_bps_basic() {
+    assert!(market::ltv_bps(500, 1000) == 5_000, 0); // 50%
+    assert!(market::ltv_bps(800, 1000) == 8_000, 1); // 80%
+    assert!(market::ltv_bps(1, 0) == 10_001, 2); // zero collateral -> over-cap sentinel
+}

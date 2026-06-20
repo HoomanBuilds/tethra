@@ -126,6 +126,22 @@ public fun shares_for_debt(amount: u64, index: u128): u64 {
     (((amount as u128) * (SCALE as u128)) / index) as u64
 }
 
+public fun collateral_value(n_tplp: u64, cost_basis: u64, total_shares: u64): u64 {
+    if (total_shares == 0) 0 else mul_div(n_tplp, cost_basis, total_shares)
+}
+
+public fun preview_supply(amount: u64, total_supply: u64, total_assets: u64): u64 {
+    mul_div(amount, total_supply + VIRTUAL, total_assets + VIRTUAL)
+}
+
+public fun preview_unsupply(shares: u64, total_supply: u64, total_assets: u64): u64 {
+    mul_div(shares, total_assets + VIRTUAL, total_supply + VIRTUAL)
+}
+
+public fun ltv_bps(debt_value: u64, coll_value: u64): u64 {
+    if (coll_value == 0) BPS + 1 else mul_div(debt_value, BPS, coll_value)
+}
+
 public fun reserve_value(m: &Market): u64 { m.reserve.value() }
 public fun total_collateral(m: &Market): u64 { m.collateral.value() }
 public fun total_borrow_shares(m: &Market): u64 { m.total_borrow_shares }
