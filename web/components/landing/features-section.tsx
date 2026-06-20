@@ -18,7 +18,7 @@ const features = [
   {
     number: "03",
     title: "Conservative Exposure Caps",
-    description: "Strict per-market caps and tenor limits bound the vault's risk. Defined-range positions are designed to limit drawdown.",
+    description: "Exposure sits behind Predict's protocol-level cap, and the strategy backtests set conservative deposit and tenor policy to contain drawdown.",
     stats: { value: "15%", label: "fee on profit" },
   },
   {

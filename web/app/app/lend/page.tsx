@@ -45,13 +45,12 @@ function computeApy(pool: {
   const util = Number(pool.totalBorrow) / Number(pool.totalSupply);
   let borrowRate: number;
   if (util <= pool.optimalUtilization) {
-    borrowRate = pool.baseRate + pool.baseSlope * (util / pool.optimalUtilization);
+    borrowRate = pool.baseRate + pool.baseSlope * util;
   } else {
     borrowRate =
       pool.baseRate +
-      pool.baseSlope +
-      pool.excessSlope *
-        ((util - pool.optimalUtilization) / (1 - pool.optimalUtilization));
+      pool.baseSlope * pool.optimalUtilization +
+      pool.excessSlope * (util - pool.optimalUtilization);
   }
   const supplyApy = borrowRate * util * (1 - pool.protocolSpread);
   return { util, supplyApy };

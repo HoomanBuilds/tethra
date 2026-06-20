@@ -173,8 +173,10 @@ export default function RiskPage() {
                 </span>
               </div>
               <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
-                Predict enforces an on-chain withdrawal limiter (a token bucket)
-                so the house can never be drained faster than it can de-risk.
+                Withdrawals are bounded by max-payout coverage: the house keeps
+                enough to cover worst-case open payouts. Predict also has a
+                configurable withdrawal limiter (a token bucket), currently
+                disabled on testnet.
               </p>
               <div className="mt-8">
                 <Row
