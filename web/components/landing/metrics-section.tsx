@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const metrics = [
   {
@@ -221,6 +222,21 @@ export function MetricsSection() {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
+  const { data: live } = useQuery<{
+    vaultValue: number;
+    plpSharePrice: number;
+    utilization: number;
+  }>({
+    queryKey: ["plp-risk"],
+    queryFn: async () => {
+      const res = await fetch("/api/plp-risk");
+      if (!res.ok) throw new Error("plp-risk");
+      return res.json();
+    },
+    staleTime: 30_000,
+  });
+  const poolValue = live ? Math.round(live.vaultValue / 1e6) : null;
+
   useEffect(() => {
     setTime(new Date());
     const interval = setInterval(() => setTime(new Date()), 1000);
@@ -285,13 +301,21 @@ export function MetricsSection() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           }`}>
             <div className="text-4xl md:text-5xl lg:text-6xl font-display tracking-tight mb-4 whitespace-nowrap overflow-hidden">
-              <AnimatedNumber end={metrics[0].value} suffix={metrics[0].suffix} prefix={metrics[0].prefix} />
+              {poolValue != null ? (
+                <AnimatedNumber key={poolValue} end={poolValue} />
+              ) : (
+                <AnimatedNumber end={metrics[0].value} suffix={metrics[0].suffix} prefix={metrics[0].prefix} />
+              )}
             </div>
             <div className="mb-6">
               <DotGraph color="white" height={36} freq1={0.28} freq2={0.09} freqT={0.5} speed={0.018} baseline={0.35} amplitude={0.55} />
             </div>
-            <div className="text-lg text-foreground mb-2">{metrics[0].label}</div>
-            <div className="text-sm text-muted-foreground font-mono">{metrics[0].sublabel}</div>
+            <div className="text-lg text-foreground mb-2">
+              {poolValue != null ? "DUSDC in the PLP pool" : metrics[0].label}
+            </div>
+            <div className="text-sm text-muted-foreground font-mono">
+              {poolValue != null ? "Live, supplied to the Predict house" : metrics[0].sublabel}
+            </div>
           </div>
 
           {/* Metrics */}
@@ -329,8 +353,16 @@ export function MetricsSection() {
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
           <span>Live on Sui testnet</span>
-          <span>Predict PLP + Margin lending</span>
-          <span>Keeper redeems Predict positions</span>
+          {live ? (
+            <span>PLP share price {live.plpSharePrice.toFixed(4)}</span>
+          ) : (
+            <span>Predict PLP + Margin lending</span>
+          )}
+          {live ? (
+            <span>Utilization {(live.utilization * 100).toFixed(2)}%</span>
+          ) : (
+            <span>Keeper redeems Predict positions</span>
+          )}
           <span>No management fee</span>
           <span className="text-foreground">85% kept by depositors</span>
         </div>

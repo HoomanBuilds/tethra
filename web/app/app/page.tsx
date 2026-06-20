@@ -12,7 +12,7 @@ import {
 import { ConnectWallet } from "@/components/app/connect-wallet";
 import { TethraChart } from "@/components/app/chart";
 import { CHART } from "@/lib/chart-theme";
-import { backtest } from "@/lib/backtest-data";
+import { usePlpNav } from "@/lib/plp-risk";
 import { useVaultState, useShareBalance } from "@/lib/vault";
 import { fromDusdc, fromShares, formatUsd, formatNumber, formatPercent } from "@/lib/format";
 import {
@@ -39,12 +39,13 @@ export default function VaultOverview() {
 
   const loading = isPending || !state;
 
-  const nav = backtest.nav;
+  const { nav: navData } = usePlpNav();
+  const navSeries = navData?.series ?? [];
   const navOption = {
     grid: { left: 8, right: 18, top: 18, bottom: 24, containLabel: true },
     xAxis: {
       type: "category",
-      data: nav.map((p) => p.t),
+      data: navSeries.map((p) => p.t),
       boundaryGap: false,
     },
     yAxis: { type: "value", scale: true },
@@ -53,7 +54,7 @@ export default function VaultOverview() {
         type: "line",
         smooth: true,
         symbol: "none",
-        data: nav.map((p) => p.v),
+        data: navSeries.map((p) => p.v),
         lineStyle: { color: CHART.accent, width: 2 },
         areaStyle: { color: CHART.accentSoft },
       },
@@ -121,13 +122,18 @@ export default function VaultOverview() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mt-6">
         <Panel className="lg:col-span-2 p-6 lg:p-8">
           <div className="flex items-center justify-between mb-6">
-            <Tag>NAV trend, backtest over real testnet flow</Tag>
+            <Tag>PLP pool NAV, live from DeepBook Predict</Tag>
+            {navSeries.length > 0 && navData?.changePct != null && (
+              <span className="font-mono text-sm text-[#eca8d6]">
+                +{navData.changePct.toFixed(2)}% since inception
+              </span>
+            )}
           </div>
-          {nav.length > 0 ? (
+          {navSeries.length > 0 ? (
             <TethraChart option={navOption} height={320} />
           ) : (
             <div className="flex items-center justify-center h-[320px] text-sm text-muted-foreground font-mono">
-              Backtest series not available
+              Loading live NAV…
             </div>
           )}
         </Panel>

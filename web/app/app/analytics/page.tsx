@@ -1,11 +1,12 @@
 "use client";
 
 import { backtest } from "@/lib/backtest-data";
+import { useBtcFeed } from "@/lib/plp-risk";
 import { TethraChart } from "@/components/app/chart";
 import { CHART } from "@/lib/chart-theme";
 import { PageHeader, Panel, StatCard, Tag } from "@/components/app/app-kit";
 
-const { summary, nav, drawdown, feeYield, exposure, btc, pricing } = backtest;
+const { summary, nav, drawdown, feeYield, exposure, pricing } = backtest;
 
 const fmtPct = (x: number) => `${x >= 0 ? "" : ""}${x.toFixed(2)}%`;
 const fmtBps = (x: number) => `${x}`;
@@ -49,6 +50,9 @@ const axisTime = (data: { t: string }[]) => ({
 });
 
 export default function AnalyticsPage() {
+  const { btc: btcData } = useBtcFeed();
+  const liveBtc = btcData?.series ?? [];
+
   const navOption = {
     xAxis: axisTime(nav),
     yAxis: {
@@ -109,7 +113,8 @@ export default function AnalyticsPage() {
   };
 
   const btcOption = {
-    xAxis: axisTime(btc),
+    grid: { left: 8, right: 18, top: 18, bottom: 28, containLabel: true },
+    xAxis: { type: "category", data: liveBtc.map((p) => p.t), boundaryGap: false },
     yAxis: {
       type: "value",
       scale: true,
@@ -121,7 +126,7 @@ export default function AnalyticsPage() {
         type: "line",
         smooth: true,
         symbol: "none",
-        data: btc.map((p) => p.v),
+        data: liveBtc.map((p) => p.v),
         lineStyle: { color: CHART.muted, width: 1.5 },
       },
     ],
@@ -221,7 +226,7 @@ export default function AnalyticsPage() {
           <PageHeader
             label="Analytics"
             title="Evidence, not promises."
-            description="Every series below is a backtest over real DeepBook Predict testnet flow. It is not a forward return guarantee."
+            description="The performance series below are a backtest over real DeepBook Predict testnet flow (not a forward return guarantee). The BTC spot chart is a live oracle feed."
           />
         </div>
       </div>
@@ -288,11 +293,11 @@ export default function AnalyticsPage() {
           )}
         </ChartPanel>
 
-        <ChartPanel caption="BTC daily close, regime context" title="BTC regime">
-          {btc.length ? (
+        <ChartPanel caption="Live BTC spot, oracle feed" title="BTC spot (live)">
+          {liveBtc.length ? (
             <TethraChart option={btcOption} height={300} />
           ) : (
-            <NotAvailable note="No BTC price history was available." />
+            <NotAvailable note="Live BTC spot is loading from the Predict oracle feed." />
           )}
         </ChartPanel>
 
