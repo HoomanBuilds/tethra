@@ -13,6 +13,7 @@ const footerLinks = {
     { name: "Open app", href: "/app" },
     { name: "Predict vault", href: "/app/deposit" },
     { name: "Lend vault", href: "/app/lend" },
+    { name: "Borrow market", href: "/app/borrow" },
     { name: "DeepBook", href: "#integrations" },
   ],
 };

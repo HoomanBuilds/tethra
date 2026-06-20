@@ -25,7 +25,7 @@ export default function DepositPage() {
   return (
     <div className="max-w-[1400px] mx-auto">
       <PageHeader
-        label="Deposit and withdraw"
+        label="Provide PLP liquidity"
         title="Put dUSDC to work."
         description="One deposit supplies risk-managed PLP liquidity. You receive plpVAULT shares that redeem for your share of the pool, net of a profit-only fee."
       />

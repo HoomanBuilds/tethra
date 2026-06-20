@@ -217,7 +217,7 @@ export default function RiskPage() {
                 </div>
               </div>
 
-              <div className="flex gap-8 lg:gap-12">
+              <div className="flex flex-wrap gap-6 lg:gap-12">
                 <div>
                   <span className="block text-xs font-mono text-muted-foreground uppercase tracking-wider">
                     PLP drawdown

@@ -11,14 +11,16 @@ export function TethraChart({
   className = "",
 }: {
   option: Record<string, any>;
-  height?: number;
+  height?: number | string;
   className?: string;
 }) {
+  // A string height (e.g. "100%") lets the chart fill a flex parent.
+  const fill = typeof height === "string";
   return (
-    <div className={className} style={{ width: "100%" }}>
+    <div className={className} style={{ width: "100%", height: fill ? "100%" : undefined }}>
       <ReactECharts
         option={applyTheme(option)}
-        style={{ height: `${height}px`, width: "100%" }}
+        style={{ height: fill ? height : `${height}px`, width: "100%" }}
         opts={{ renderer: "canvas" }}
         notMerge
         lazyUpdate
