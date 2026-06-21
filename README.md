@@ -11,7 +11,7 @@ Tethra is a set of trustless, one-deposit liquidity vaults built on [DeepBook](h
 There are three products, and they compose:
 
 - **Tier 1, the Predict PLP vault.** Supplies risk-managed PLP (pool-liquidity-provider) liquidity that underwrites BTC binary positions and vertical ranges on DeepBook Predict, and auto-compounds. Exposure is bounded by Predict's protocol-level cap; a keeper redeems settled positions. Depositors earn net-of-fee yield; the vault takes a 10% performance fee on profit only.
-- **Tier 2, the Margin lending vault.** Supplies SUI or DBUSDC (DeepBook Margin's stablecoin, distinct from the Predict dUSDC) to DeepBook Margin lending pools and earns variable yield paid by margin traders. The same trustless wrapper as Tier 1 (shares, deposit cap, 10% profit-only fee, no management fee), a real money-market yield, and no keeper needed.
+- **Tier 2, the Margin lending vault.** Supplies SUI or DBUSDC (DeepBook Margin's stablecoin, distinct from the Predict dUSDC) to DeepBook Margin lending pools and earns variable yield paid by margin traders. The same trustless wrapper as Tier 1 (shares, deposit cap, 10% profit-only fee, no management fee), a real money-market yield, and a captured DeepBook Margin supply-referral fee that is compounded back to depositors.
 - **Tier 3, the tPLP/dUSDC borrow market.** An open, isolated lending market (Morpho-Blue style): supply dUSDC to earn, or lock your Tier 1 vault shares (tPLP) as collateral and borrow dUSDC against them. Liquidations are self-redeeming, they redeem the borrower's tPLP back through the Tier 1 vault, so no oracle and no external liquidity are needed.
 
 This repository is the working testnet build, deployed and initialized on **Sui testnet**, submitted for **Sui Overflow 2026 (DeepBook Predict track)**.
@@ -48,7 +48,7 @@ Tethra is four parts working as one:
 
 3. **A strategy engine (TypeScript).** A validated SVI options-pricing engine plus reproducible backtests on real historical BTC data. This is the research that justifies the Tier 1 design: it is where the exposure caps, the no-spot-hedge decision, and the economics come from, rather than being asserted.
 
-4. **A web app (Next.js).** A single app and landing page. Connect a Sui wallet to deposit into the Predict vault, lend SUI or DBUSDC on Margin, supply or borrow on the tPLP market, and watch every number read live from the testnet contracts, including a PLP risk dashboard driven by the strategy engine's outputs.
+4. **A web app (Next.js).** A single app and landing page. Connect a Sui wallet to deposit into the Predict vault, lend SUI or DBUSDC on Margin, supply or borrow on the tPLP market, and watch every number read live from the testnet contracts, including a PLP risk dashboard, a live SVI volatility surface, and a per-oracle exposure stress test, all driven by the strategy engine's pricing.
 
 Put together: one dUSDC deposit becomes a share coin in a trustless vault; that liquidity earns on DeepBook; the keeper keeps the on-chain state honest; and the same share coin can itself be used as collateral to borrow. You hold the keys the entire time.
 
@@ -74,7 +74,7 @@ Tier 2 was added only after two findings: that DeepBook Margin's supply and with
 
 ### Tier 2: The Margin Lending Vault
 
-`tethra_lend` is two vaults in one package: `lend_vault` (SUI) and `lend_vault_dbusdc` (DBUSDC, DeepBook Margin's stablecoin, distinct from the Predict dUSDC that Tier 1 and Tier 3 use; the two are siloed on testnet). Each takes the matching deposit, mints a share coin (tlSUI / tlDBUSDC), and supplies the asset to a DeepBook Margin lending pool, where it is borrowed by margin traders. Yield is variable and paid by those borrowers, net of the same 10% profit-only performance fee as Tier 1 (admin-set, capped at 30%); there is no management fee. The vault holds a single `SupplierCap` and calls `supply` / `withdraw` inside the user's own transaction, so it is trustless and needs no keeper. The vaults link DeepBook Margin's v1 entry points, which the testnet MarginRegistry accepts.
+`tethra_lend` is two vaults in one package: `lend_vault` (SUI) and `lend_vault_dbusdc` (DBUSDC, DeepBook Margin's stablecoin, distinct from the Predict dUSDC that Tier 1 and Tier 3 use; the two are siloed on testnet). Each takes the matching deposit, mints a share coin (tlSUI / tlDBUSDC), and supplies the asset to a DeepBook Margin lending pool, where it is borrowed by margin traders. Yield is variable and paid by those borrowers, net of the same 10% profit-only performance fee as Tier 1 (admin-set, capped at 30%); there is no management fee. The vault holds a single `SupplierCap` and calls `supply` / `withdraw` inside the user's own transaction, so it is trustless and needs no keeper. The vaults link DeepBook Margin's v1 entry points, which the testnet MarginRegistry accepts. Each vault also mints a DeepBook Margin **supply referral** and routes its deposits through it, reclaiming the 50% referral slice of the pool spread that would otherwise be forfeited to the protocol's default referral; a small keeper periodically claims those fees and compounds them straight back into the vault position (minting no new shares), so the extra yield lifts NAV for every depositor. The capture shows live on `/app/lend`.
 
 ### Tier 3: The tPLP Borrow Market
 
@@ -91,7 +91,7 @@ Tier 2 was added only after two findings: that DeepBook Margin's supply and with
 
 ### The Strategy Engine
 
-`strategy/` is the off-chain research, in TypeScript. It contains a validated SVI volatility-surface pricing engine (`src/svi/`) matched against the protocol's real on-chain `ask` to a median error of 1e-5, plus a suite of reproducible simulations in `src/sim/`: the BTC backtest, the economics model, the spot-hedge analysis that killed delta-hedging, exposure overlays, a stress test, the Tier 2 active-strategy research, the leveraged-PLP loop economics, and the borrow-market liquidation-safety backtest. These are not decorative; the vault's risk parameters come from them, and `export-web.ts` feeds the app's risk dashboard.
+`strategy/` is the off-chain research, in TypeScript. It contains a validated SVI volatility-surface pricing engine (`src/svi/`) matched against the protocol's real on-chain `ask` to a median error of 1e-5, plus a suite of reproducible simulations in `src/sim/`: the BTC backtest, the economics model, the spot-hedge analysis that killed delta-hedging, exposure overlays, a stress test, the Tier 2 active-strategy research, the leveraged-PLP loop economics, and the borrow-market liquidation-safety backtest. These are not decorative; the vault's risk parameters come from them, and `export-web.ts` feeds the app's risk dashboard. The same SVI engine also powers two live, on-chain-data views: a volatility-surface viewer (`/app/surface`) that renders the Predict oracles' implied-vol smiles with butterfly and calendar no-arbitrage checks, and an exposure dashboard (`/app/exposure`) that breaks the pool's per-oracle liability down (reconciled against the on-chain vault summary) and stress-tests it against a BTC move repriced through the live surface.
 
 ### The Web App
 
@@ -99,8 +99,9 @@ Tier 2 was added only after two findings: that DeepBook Margin's supply and with
 
 - **Overview** at `/app`, with the live PLP pool NAV chart and your position.
 - **Provide PLP liquidity** at `/app/deposit` (the Tier 1 Predict vault).
-- **Lend on Margin** at `/app/lend` (the Tier 2 SUI / DBUSDC vaults, with a toggle).
+- **Lend on Margin** at `/app/lend` (the Tier 2 SUI / DBUSDC vaults, with a toggle and a live referral-capture readout).
 - **Supply dUSDC** at `/app/supply` and **Borrow against tPLP** at `/app/borrow` (the two sides of the Tier 3 market).
+- **Vol Surface** at `/app/surface` (the live SVI volatility smiles from the Predict oracles, with no-arbitrage checks) and **Exposure** at `/app/exposure` (per-oracle PLP exposure with an SVI-driven BTC-move stress test).
 - **Portfolio**, **Analytics**, a **PLP Risk** what-if dashboard, and an **Activity** feed.
 
 Every figure is read live from the testnet contracts; addresses live in `web/lib/config.ts` and `web/lib/borrow.ts`.
@@ -119,15 +120,18 @@ All objects are live on **Sui testnet** (chain id `4c78adac`). Explorer: https:/
 | Vault (shared) | `0x21528665ba5731f9ffa2a7fe3024f87b77b86660a615118e2e3d1d150299aeb0` |
 | tPLP share type | `<package>::vault::VAULT` |
 
-### Tier 2, Margin lending vault (`tethra_lend`)
+### Tier 2, Margin lending vault (`tethra_lend`, referral-enabled)
 
 | Object | ID |
 | ------ | -- |
-| Package | `0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93` |
-| SUI vault (shared) | `0x6310194b5838e5dfc06dcc254a80dc7897eb1c43cbb3d65cc539b79b6c3aa264` |
-| DBUSDC vault (shared) | `0xccc2def235d38953bfaadc8c5420221149c42d131fb4ae148e7a7dd229f24856` |
-| DBUSDC margin pool | `0xf08568da93834e1ee04f09902ac7b1e78d3fdf113ab4d2106c7265e95318b14d` |
+| Package | `0xc61b07b4d84e93be8d8c033f8a52c35d594bbeb486f832d67744d0b83a357d6d` |
+| SUI vault (shared) | `0xea490c338eb9709147b913fdcdf44c1b928f79c01419f8fbc50f9254e71e3cd8` |
+| DBUSDC vault (shared) | `0xfa7a4c5653ea73c48b2d6376cd660e67a995b7e12a5e419e4ae0fafd9455ea4f` |
+| SUI / DBUSDC margin pools | `0xcdbbe6a72e639b647296788e2e4b1cac5cea4246028ba388ba1332ff9a382eea` / `0xf08568da93834e1ee04f09902ac7b1e78d3fdf113ab4d2106c7265e95318b14d` |
+| supply referrals (SUI / DBUSDC) | `0xc4f4e9991dd61539a78dc17a76da86a3cdd35195ca6508736b7f0ebc8ceb0203` / `0xe229d2ca1819d6039d0e191f05865f4751d2220a66b1e6f72365e5cecbd84955` |
 | share types | `<package>::lend_vault::LEND_VAULT`, `<package>::lend_vault_dbusdc::LEND_VAULT_DBUSDC` |
+
+The superseded pre-referral deployment (`lendVaultV2`, package `0x26710678…`) is kept in [`deployments/testnet.json`](deployments/testnet.json) for history.
 
 ### Tier 3, tPLP/dUSDC borrow market (`tethra_borrow_market`)
 
@@ -274,7 +278,8 @@ A few honest notes about the live state, learned by running it end to end:
 1. **Three live, trustless markets.** Open the shared objects on the explorer: the Predict vault `0x21528665...`, the Margin vaults, and the borrow market `0x06f2e438...`. Each is a shared Move object with no admin authority over user principal.
 2. **A keeper doing real work.** The redeem keeper has submitted real `redeem_permissionless` transactions against the live vault; the liquidation keeper reads each borrower's on-chain `health_bps` before acting.
 3. **Composability without an oracle.** The borrow market values tPLP at the vault cost-basis floor and liquidates by redeeming through the vault that issued it. No price feed, no external liquidity.
-4. **Honesty over yield.** The Tier 1 risk parameters come from the backtests in `strategy/`, not from a marketing number. The fee is charged only on realized profit, and the SVI pricing is validated against on-chain `ask` to a 1e-5 median error.
+4. **Honesty over yield.** The Tier 1 risk parameters come from the backtests in `strategy/`, not from a marketing number. The fee is charged only on realized profit (10%, capped at 30% in code), and the SVI pricing is validated against on-chain `ask` to a 1e-5 median error.
+5. **The track's idea bank, live on-chain.** `/app/surface` renders the Predict oracles' SVI volatility surface with butterfly and calendar no-arbitrage checks (idea #9); `/app/exposure` breaks the pool's per-oracle liability down and stress-tests it through that surface (idea #10). Tier 2 additionally captures the DeepBook Margin supply-referral fee and compounds it to depositors.
 
 ### The One-Line Story
 
