@@ -22,8 +22,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Tethra — Safe, automated liquidity vaults on DeepBook',
-  description: 'One-deposit Sui vaults: supply risk-managed PLP liquidity on DeepBook Predict, or lend SUI and dUSDC on DeepBook Margin. Non-custodial, auto-compounding, profit-only fee.',
+  title: 'Tethra: earn, lend, and borrow on DeepBook Predict',
+  description: 'One deposit, three composable markets on DeepBook: earn PLP yield on Predict, lend SUI or DBUSDC on Margin, and borrow against your tokenized vault share. Non-custodial, with a profit-only fee.',
 }
 
 export default function RootLayout({
