@@ -79,7 +79,7 @@ export default function PortfolioPage() {
       <div className="max-w-[1400px] mx-auto">
         <EmptyState
           title="No position yet"
-          description="Deposit dUSDC to receive plpVAULT shares."
+          description="Deposit dUSDC to receive tPLP shares."
           image="/images/tree.png"
           action={
             <Button

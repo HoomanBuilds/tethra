@@ -7,7 +7,7 @@ const POINTS = [
   {
     title: "Shares mint on deposit",
     detail:
-      "Your dUSDC supplies risk-managed PLP liquidity. You receive plpVAULT shares that track your slice of the pool.",
+      "Your dUSDC supplies risk-managed PLP liquidity. You receive tPLP shares that track your slice of the pool.",
   },
   {
     title: "Shares burn on withdraw",
@@ -27,7 +27,7 @@ export default function DepositPage() {
       <PageHeader
         label="Provide PLP liquidity"
         title="Put dUSDC to work."
-        description="One deposit supplies risk-managed PLP liquidity. You receive plpVAULT shares that redeem for your share of the pool, net of a profit-only fee."
+        description="One deposit supplies risk-managed PLP liquidity. You receive tPLP shares that redeem for your share of the pool, net of a profit-only fee."
       />
 
       <div className="grid gap-8 lg:grid-cols-2 items-start">

@@ -427,7 +427,7 @@ function WithdrawTab() {
 
       {account && !hasShares && (
         <p className="text-xs text-muted-foreground leading-relaxed">
-          No shares to withdraw yet. Deposit dUSDC to receive plpVAULT shares.
+          No shares to withdraw yet. Deposit dUSDC to receive tPLP shares.
         </p>
       )}
 

@@ -99,7 +99,7 @@ export default function VaultOverview() {
             <StatCard
               label="Total shares"
               value={formatNumber(fromShares(state.totalShares))}
-              sub="plpVAULT supply"
+              sub="tPLP supply"
             />
             <StatCard
               label="Performance fee"
@@ -151,7 +151,7 @@ export default function VaultOverview() {
                 <span className="mt-2 block text-3xl lg:text-4xl font-display tracking-tight leading-none">
                   {formatNumber(yourShares)}
                 </span>
-                <span className="mt-2 block text-sm text-muted-foreground">plpVAULT held</span>
+                <span className="mt-2 block text-sm text-muted-foreground">tPLP held</span>
               </div>
               <div>
                 <span className="block text-xs font-mono text-muted-foreground uppercase tracking-wider">
