@@ -18,6 +18,7 @@ import {
   useLendVaultState,
   useMarginPool,
   useLendShareBalance,
+  useLendReferral,
 } from "@/lib/lend";
 import { fromUnits, formatNumber, formatPercent } from "@/lib/format";
 import { explorerObject } from "@/lib/config";
@@ -137,6 +138,8 @@ export default function LendPage() {
   const { pool, isPending: poolPending } = useMarginPool(asset);
   const { state: vaultState, isPending: vaultPending } = useLendVaultState(asset);
   const { balance: shareBalance } = useLendShareBalance(account?.address, asset);
+  const { referral } = useLendReferral();
+  const cap = referral?.[assetKey];
 
   const loading = poolPending || vaultPending || !pool;
 
@@ -243,6 +246,43 @@ export default function LendPage() {
           )}
         </Panel>
       </div>
+
+      <Panel className="p-6 lg:p-8 mt-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Tag>Referral capture</Tag>
+          <span className="flex items-center gap-2 text-sm text-muted-foreground">
+            <AccentDot active={cap?.active ?? false} />
+            {cap?.active ? "Active" : "Inactive"}
+          </span>
+        </div>
+        <div className="mt-6 grid gap-6 lg:grid-cols-3">
+          <PositionStat
+            label="Captured (accruing)"
+            value={`${formatNumber(cap?.captured ?? 0, 6)} ${asset.symbol}`}
+            sub="referral fees claimed + unclaimed"
+          />
+          <PositionStat
+            label="Deposit routing"
+            value={cap?.active ? "On" : "Off"}
+            sub="through Tethra's SupplyReferral"
+          />
+          <p className="text-sm text-muted-foreground leading-relaxed self-center">
+            Tethra reclaims the 50% referral slice of the DeepBook margin spread the
+            protocol would otherwise keep, and compounds it back into the vault —
+            extra yield for every depositor.
+          </p>
+        </div>
+        <div className="mt-6">
+          <a
+            href={explorerObject(asset.referral)}
+            target="_blank"
+            rel="noreferrer"
+            className="font-mono text-sm text-muted-foreground hover:text-foreground underline underline-offset-4 decoration-foreground/20 hover:decoration-foreground/60 transition-colors"
+          >
+            Referral object
+          </a>
+        </div>
+      </Panel>
 
       <Panel className="relative overflow-hidden p-6 lg:p-8 mt-6">
         <div className="pointer-events-none absolute inset-0 flex items-center justify-end">
