@@ -4,9 +4,9 @@ import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { decodeSuiPrivateKey } from '@mysten/sui/cryptography';
 import { RPC } from './config.ts';
 
-const PKG = '0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93';
-const ADMIN_CAP = '0x164a48b3094f79bae3fe786d2dba5dcb1f218c18ce7197356b821acdbdc13100';
-const VAULT = '0xccc2def235d38953bfaadc8c5420221149c42d131fb4ae148e7a7dd229f24856';
+const PKG = '0xc61b07b4d84e93be8d8c033f8a52c35d594bbeb486f832d67744d0b83a357d6d';
+const ADMIN_CAP = '0x271067a0468ae27b30db5b548224d8c4def70379a5b97fe993808847e318b9b8';
+const VAULT = '0xfa7a4c5653ea73c48b2d6376cd660e67a995b7e12a5e419e4ae0fafd9455ea4f';
 const REGISTRY = '0x48d7640dfae2c6e9ceeada197a7a1643984b5a24c55a0c6c023dac77e0339f75';
 const CLOCK = '0x6';
 
