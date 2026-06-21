@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="web/public/logo.png" alt="Tethra logo" width="140" />
+</p>
+
 <h1 align="center">Tethra</h1>
 
 <p align="center">
@@ -88,6 +92,8 @@ Tier 2 was added only after two findings: that DeepBook Margin's supply and with
 - **Redeem keeper** (`keeper.ts`): reads the public DeepBook Predict indexer for the vault's settled positions and calls `redeem_permissionless`, clearing winners and losers so the vault NAV is current. This has run real redeem transactions against the live testnet vault.
 - **Liquidation keeper** (`liquidator.ts`): enumerates open borrow-market positions, asks the contract's `health_bps` view for each borrower's live LTV (the same figure `liquidate` re-checks on chain), and liquidates anyone at or past the threshold. The 5% penalty accrues to the market's fee treasury, so it is run from that address.
 
+Run both keepers together in production with `npm run prod`, a single supervised process that loads the signer from `keeper/.env`.
+
 `keeper/src/` also holds the publish/initialize scripts used to deploy each package, and round-trip scripts that exercise deposit and withdraw end to end.
 
 ### The Strategy Engine
@@ -103,7 +109,7 @@ Tier 2 was added only after two findings: that DeepBook Margin's supply and with
 - **Lend on Margin** at `/app/lend` (the Tier 2 SUI / DBUSDC vaults, with a toggle and a live referral-capture readout).
 - **Supply dUSDC** at `/app/supply` and **Borrow against tPLP** at `/app/borrow` (the two sides of the Tier 3 market).
 - **Vol Surface** at `/app/surface` (the live SVI volatility smiles from the Predict oracles, with no-arbitrage checks) and **Exposure** at `/app/exposure` (per-oracle PLP exposure with an SVI-driven BTC-move stress test).
-- **Portfolio**, **Analytics**, a **PLP Risk** what-if dashboard, and an **Activity** feed.
+- **Portfolio** (all four tiers in one view), **Analytics**, a **PLP Risk** what-if dashboard, and an **Activity** feed across all tiers.
 
 Every figure is read live from the testnet contracts; addresses live in `web/lib/config.ts` and `web/lib/borrow.ts`.
 
@@ -113,17 +119,17 @@ Every figure is read live from the testnet contracts; addresses live in `web/lib
 
 Every number is read live from the testnet contracts and indexer, except charts marked **backtest** (a historical simulation in `strategy/`). What each page's key figures mean:
 
-- **Overview** (`/app`) — **Principal**: total dUSDC deposited across all users (the pool's cost basis). **Total shares**: all tPLP outstanding. **Performance fee**: 10%, on profit only (90% stays with depositors). **PLP pool NAV** chart with "% since inception". **Your shares / Share of vault**: your holding and ownership %.
-- **Provide PLP liquidity** (`/app/deposit`) — the "You receive" previews are live on-chain dry-runs; the withdraw preview is already **net of the 10% profit fee**.
-- **Lend on Margin** (`/app/lend`) — **Utilization** (borrowed ÷ supplied), **Est. supply APY** (variable, paid by borrowers), **Total supplied/borrowed** (the DeepBook pool). **Referral capture / Captured (accruing)**: the 50% referral slice Tethra reclaims from DeepBook and compounds back to depositors — bonus yield, not a charge.
-- **Supply dUSDC** (`/app/supply`) — **Est. supply APY** (suppliers earn 100% of the borrow interest), **Idle reserve** (withdrawable now), **tpUSDC held / Redeemable / Share of pool**.
-- **Borrow against tPLP** (`/app/borrow`) — **Max LTV 50% / liquidation 80%**, **Est. borrow APR**, **Available to borrow**. **Projected vs Current LTV** and a **Status** (Healthy → Caution → At risk → Liquidatable). Collateral is valued at the cost-basis floor, no oracle.
-- **Portfolio** (`/app/portfolio`) — **Cost-basis principal** (what you put in, fixed) vs **Current redeemable, live** (what you'd get now, net of fee); **Unrealized** is the difference (your P&L).
-- **Analytics** (`/app/analytics`) — **backtest**, except the live BTC chart: **House edge** (bps), **Max drawdown**, **Net yield** (after the 10% fee), **Pricing match** (SVI vs on-chain ask, ~1e-5), plus NAV, drawdown, fee-accrual, exposure-vs-cap, and pricing-accuracy charts.
-- **Vol Surface** (`/app/surface`) — **BTC forward**, **Live markets**, **Front ATM vol**, **Front skew**; the smile chart is implied vol vs strike per expiry, with **Butterfly / Calendar** no-arbitrage checks on the live surface.
-- **PLP Risk** (`/app/risk`) — **Max-payout utilization** is the key safety gauge (worst-case payout ÷ pool); **coverage "Nx"**; a what-if slider for an adverse settlement.
-- **Exposure** (`/app/exposure`) — **Max-payout exposure** (house worst-case, reconciled to chain), **Top concentration**, per-oracle bars, and a **BTC-move stress test** (liability Δ, PLP impact, positions crossing strike).
-- **Activity** (`/app/activity`) — deposit/withdraw transactions with explorer links and status.
+- **Overview** (`/app`): **Principal**: total dUSDC deposited across all users (the pool's cost basis). **Total shares**: all tPLP outstanding. **Performance fee**: 10%, on profit only (90% stays with depositors). **PLP pool NAV** chart with "% since inception". **Your shares / Share of vault**: your holding and ownership %.
+- **Provide PLP liquidity** (`/app/deposit`): the "You receive" previews are live on-chain dry-runs; the withdraw preview is already **net of the 10% profit fee**. A live position box shows your tPLP, principal, redeemable, and unrealized P&L.
+- **Lend on Margin** (`/app/lend`): **Utilization** (borrowed ÷ supplied), **Est. supply APY** (variable, paid by borrowers), **Total supplied/borrowed** (the DeepBook pool). **Referral capture / Captured (accruing)**: the 50% referral slice Tethra reclaims from DeepBook and compounds back to depositors, bonus yield, not a charge.
+- **Supply dUSDC** (`/app/supply`): **Est. supply APY** (suppliers earn 100% of the borrow interest), **Idle reserve** (withdrawable now), **tpUSDC held / Redeemable / Share of pool**.
+- **Borrow against tPLP** (`/app/borrow`): **Max LTV 50% / liquidation 80%**, **Est. borrow APR**, **Available to borrow**. **Projected vs Current LTV** and a **Status** (Healthy → Caution → At risk → Liquidatable). Collateral is valued at the cost-basis floor, no oracle.
+- **Portfolio** (`/app/portfolio`): every position in one place across all four tiers (PLP liquidity, margin lending, supply, borrow), each shown live or empty. The PLP section gives **cost-basis principal** (fixed) vs **current redeemable, live** (net of fee), and the **unrealized** difference (your P&L).
+- **Analytics** (`/app/analytics`): **backtest**, except the live BTC chart: **House edge** (bps), **Max drawdown**, **Net yield** (after the 10% fee), **Pricing match** (SVI vs on-chain ask, ~1e-5), plus NAV, drawdown, fee-accrual, exposure-vs-cap, and pricing-accuracy charts.
+- **Vol Surface** (`/app/surface`): **BTC forward**, **Live markets**, **Front ATM vol**, **Front skew**; the smile chart is implied vol vs strike per expiry, with **Butterfly / Calendar** no-arbitrage checks on the live surface.
+- **PLP Risk** (`/app/risk`): **Max-payout utilization** is the key safety gauge (worst-case payout ÷ pool); **coverage "Nx"**; a what-if slider for an adverse settlement.
+- **Exposure** (`/app/exposure`): **Max-payout exposure** (house worst-case, reconciled to chain), **Top concentration**, per-oracle bars, and a **BTC-move stress test** (liability Δ, PLP impact, positions crossing strike).
+- **Activity** (`/app/activity`): every Tethra action across all tiers (PLP deposit/withdraw, lend, supply, borrow), each with an explorer link and on-chain status.
 
 **Easy to misread:** "principal / cost-basis" is fixed, "redeemable / unrealized" is live; Analytics is a backtest, not a forward return; collateral and principal use a conservative cost-basis floor, not mark-to-market; the 10% fee is profit-only (no profit, no fee); the referral capture is bonus yield, not a charge; APY/APR are variable; supplying to the borrow market is fee-free.
 
@@ -227,9 +233,8 @@ cd contracts/vault && sui move test          # and likewise in ../lend, ../borro
 
 # 2. keeper (needs KEEPER_KEY for live runs; SUI gas only)
 cd ../../keeper && npm install
-npm run dry                                   # redeem keeper, read-only preview
-KEEPER_KEY=<suiprivkey...> npm run start      # redeem keeper, live loop
-KEEPER_KEY=<suiprivkey...> npm run liquidator # borrow-market liquidation keeper
+npm run dry                                   # redeem keeper, read-only preview (no key needed)
+npm run prod                                  # production: redeem keeper + liquidator (reads KEEPER_KEY from keeper/.env)
 
 # 3. strategy (reproduce the research)
 cd ../strategy && npm install
