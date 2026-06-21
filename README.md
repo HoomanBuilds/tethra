@@ -29,6 +29,7 @@ This repository is the working testnet build, deployed and initialized on **Sui 
   - [The Keeper](#the-keeper)
   - [The Strategy Engine](#the-strategy-engine)
   - [The Web App](#the-web-app)
+- [Reading the App](#reading-the-app)
 - [Deployed Contracts](#deployed-contracts)
 - [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
@@ -105,6 +106,26 @@ Tier 2 was added only after two findings: that DeepBook Margin's supply and with
 - **Portfolio**, **Analytics**, a **PLP Risk** what-if dashboard, and an **Activity** feed.
 
 Every figure is read live from the testnet contracts; addresses live in `web/lib/config.ts` and `web/lib/borrow.ts`.
+
+---
+
+## Reading the App
+
+Every number is read live from the testnet contracts and indexer, except charts marked **backtest** (a historical simulation in `strategy/`). What each page's key figures mean:
+
+- **Overview** (`/app`) — **Principal**: total dUSDC deposited across all users (the pool's cost basis). **Total shares**: all tPLP outstanding. **Performance fee**: 10%, on profit only (90% stays with depositors). **PLP pool NAV** chart with "% since inception". **Your shares / Share of vault**: your holding and ownership %.
+- **Provide PLP liquidity** (`/app/deposit`) — the "You receive" previews are live on-chain dry-runs; the withdraw preview is already **net of the 10% profit fee**.
+- **Lend on Margin** (`/app/lend`) — **Utilization** (borrowed ÷ supplied), **Est. supply APY** (variable, paid by borrowers), **Total supplied/borrowed** (the DeepBook pool). **Referral capture / Captured (accruing)**: the 50% referral slice Tethra reclaims from DeepBook and compounds back to depositors — bonus yield, not a charge.
+- **Supply dUSDC** (`/app/supply`) — **Est. supply APY** (suppliers earn 100% of the borrow interest), **Idle reserve** (withdrawable now), **tpUSDC held / Redeemable / Share of pool**.
+- **Borrow against tPLP** (`/app/borrow`) — **Max LTV 50% / liquidation 80%**, **Est. borrow APR**, **Available to borrow**. **Projected vs Current LTV** and a **Status** (Healthy → Caution → At risk → Liquidatable). Collateral is valued at the cost-basis floor, no oracle.
+- **Portfolio** (`/app/portfolio`) — **Cost-basis principal** (what you put in, fixed) vs **Current redeemable, live** (what you'd get now, net of fee); **Unrealized** is the difference (your P&L).
+- **Analytics** (`/app/analytics`) — **backtest**, except the live BTC chart: **House edge** (bps), **Max drawdown**, **Net yield** (after the 10% fee), **Pricing match** (SVI vs on-chain ask, ~1e-5), plus NAV, drawdown, fee-accrual, exposure-vs-cap, and pricing-accuracy charts.
+- **Vol Surface** (`/app/surface`) — **BTC forward**, **Live markets**, **Front ATM vol**, **Front skew**; the smile chart is implied vol vs strike per expiry, with **Butterfly / Calendar** no-arbitrage checks on the live surface.
+- **PLP Risk** (`/app/risk`) — **Max-payout utilization** is the key safety gauge (worst-case payout ÷ pool); **coverage "Nx"**; a what-if slider for an adverse settlement.
+- **Exposure** (`/app/exposure`) — **Max-payout exposure** (house worst-case, reconciled to chain), **Top concentration**, per-oracle bars, and a **BTC-move stress test** (liability Δ, PLP impact, positions crossing strike).
+- **Activity** (`/app/activity`) — deposit/withdraw transactions with explorer links and status.
+
+**Easy to misread:** "principal / cost-basis" is fixed, "redeemable / unrealized" is live; Analytics is a backtest, not a forward return; collateral and principal use a conservative cost-basis floor, not mark-to-market; the 10% fee is profit-only (no profit, no fee); the referral capture is bonus yield, not a charge; APY/APR are variable; supplying to the borrow market is fee-free.
 
 ---
 
