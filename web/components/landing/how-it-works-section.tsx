@@ -37,7 +37,7 @@ const steps = [
   fields: ['shares', 'price', 'fee'],
   netOfFee: true
 })
-// 15% fee on profit`,
+// 10% fee on profit`,
   },
 ];
 

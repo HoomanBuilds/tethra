@@ -5,11 +5,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "The Predict vault supplies PLP liquidity to DeepBook Predict, auto-compounds returns, and caps exposure. Depositors keep 85% of profit.",
+    quote: "The Predict vault supplies PLP liquidity to DeepBook Predict, auto-compounds returns, and caps exposure. Depositors keep 90% of profit.",
     author: "Predict vault",
     role: "Tier 1, PLP liquidity",
     company: "Predict",
-    metric: { value: "85%", label: "You keep" },
+    metric: { value: "90%", label: "You keep" },
   },
   {
     quote: "The Margin vault lends SUI or DBUSDC to DeepBook Margin pools. Yield is variable, paid by borrowers, net of the same profit-only fee.",

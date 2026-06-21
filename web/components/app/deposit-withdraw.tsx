@@ -223,7 +223,7 @@ function DepositTab() {
       </div>
 
       <p className="text-xs text-muted-foreground leading-relaxed">
-        Performance fee is 15% on profit only, taken at withdrawal. 85% stays
+        Performance fee is 10% on profit only, taken at withdrawal. 90% stays
         with you. No management fee.
       </p>
 
@@ -421,7 +421,7 @@ function WithdrawTab() {
       </div>
 
       <p className="text-xs text-muted-foreground leading-relaxed">
-        Shares burn on withdrawal. The 15% performance fee applies to profit
+        Shares burn on withdrawal. The 10% performance fee applies to profit
         only, and is already reflected in the estimate above.
       </p>
 

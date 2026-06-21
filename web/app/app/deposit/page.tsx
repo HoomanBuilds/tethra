@@ -17,7 +17,7 @@ const POINTS = [
   {
     title: "Fee charged only on profit",
     detail:
-      "A 15% performance fee applies to profit at withdrawal. No management fee, so 85% of yield stays with you.",
+      "A 10% performance fee applies to profit at withdrawal. No management fee, so 90% of yield stays with you.",
   },
 ];
 

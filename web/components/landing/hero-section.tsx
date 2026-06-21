@@ -207,7 +207,7 @@ export function HeroSection() {
           {[
             { value: "1 tx", label: "deposit to start earning" },
             { value: "3", label: "markets: Predict, Margin, borrow" },
-            { value: "15%", label: "vault fee, on profit only" },
+            { value: "10%", label: "vault fee, on profit only" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col gap-2">
               <span className="text-3xl lg:text-4xl font-display text-white">{stat.value}</span>

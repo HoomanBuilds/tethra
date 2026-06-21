@@ -19,7 +19,7 @@ const features = [
     number: "03",
     title: "Conservative Exposure Caps",
     description: "Exposure sits behind Predict's protocol-level cap, and the strategy backtests set conservative deposit and tenor policy to contain drawdown.",
-    stats: { value: "15%", label: "fee on profit" },
+    stats: { value: "10%", label: "fee on profit" },
   },
   {
     number: "04",

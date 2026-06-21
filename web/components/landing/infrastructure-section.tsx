@@ -146,11 +146,11 @@ export function InfrastructureSection() {
             
             <div className="relative z-10">
               <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-8xl lg:text-[10rem] font-display leading-none">85%</span>
+                <span className="text-8xl lg:text-[10rem] font-display leading-none">90%</span>
                 <span className="text-2xl text-muted-foreground">to you</span>
               </div>
               <p className="text-muted-foreground max-w-md">
-                Vault depositors keep 85% of yield, with the 15% performance fee on realized profit only. The borrow market takes no supply fee.
+                Vault depositors keep 90% of yield, with the 10% performance fee on realized profit only. The borrow market takes no supply fee.
               </p>
             </div>
           </div>

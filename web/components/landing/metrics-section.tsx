@@ -12,7 +12,7 @@ const metrics = [
     sublabel: "Predict, Margin, and borrowing",
   },
   {
-    value: 15,
+    value: 10,
     suffix: "%",
     prefix: "",
     label: "Performance fee",
@@ -364,7 +364,7 @@ export function MetricsSection() {
             <span>Keeper redeems Predict positions</span>
           )}
           <span>No management fee</span>
-          <span className="text-foreground">85% kept by depositors</span>
+          <span className="text-foreground">90% kept by depositors</span>
         </div>
       </div>
     </section>

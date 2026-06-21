@@ -104,7 +104,7 @@ export default function VaultOverview() {
             <StatCard
               label="Performance fee"
               value={`${state.feeBps / 100}%`}
-              sub="85% stays with depositors"
+              sub="90% stays with depositors"
             />
             <StatCard
               label="Deposit cap"

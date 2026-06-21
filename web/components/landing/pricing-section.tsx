@@ -23,7 +23,7 @@ const plans = [
     description: "Charged only on realized vault profit",
     price: { monthly: 15, annual: 15 },
     features: [
-      "15% of realized profit",
+      "10% of realized profit",
       "Fee on profit only",
       "No fee without new gains",
       "No fee on principal",
@@ -39,7 +39,7 @@ const plans = [
     description: "Your share of every realized gain",
     price: { monthly: null, annual: null },
     features: [
-      "85% of realized profit",
+      "90% of realized profit",
       "100% of your principal",
       "Trustless on-chain custody",
       "Withdraw any time",
@@ -147,7 +147,7 @@ Fees on
                         <span className="text-muted-foreground text-sm">of profit</span>
                       </div>
                     ) : (
-                      <span className="text-4xl font-display">85%</span>
+                      <span className="text-4xl font-display">90%</span>
                     )}
                     {plan.price.monthly !== null && plan.price.monthly > 0 && (
                       <p className="text-xs text-muted-foreground mt-2 font-mono">
