@@ -1,7 +1,9 @@
 "use client";
 
-import { PageHeader, Panel, AccentDot } from "@/components/app/app-kit";
+import { PageHeader } from "@/components/app/app-kit";
 import { DepositWithdraw } from "@/components/app/deposit-withdraw";
+import { PlpPositionPanel } from "@/components/app/plp-position";
+import { HowItWorks } from "@/components/app/market-shared";
 
 const POINTS = [
   {
@@ -35,39 +37,10 @@ export default function DepositPage() {
           <DepositWithdraw />
         </div>
 
-        <Panel className="relative overflow-hidden p-6 lg:p-8">
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-end">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/whale.png"
-              alt=""
-              aria-hidden="true"
-              className="h-3/4 w-3/4 object-contain object-right opacity-[0.18]"
-            />
-          </div>
-
-          <div className="relative z-10">
-            <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-              How it works
-            </span>
-            <div className="mt-8 flex flex-col gap-8">
-              {POINTS.map((point) => (
-                <div key={point.title} className="flex items-start gap-4">
-                  <div className="pt-2">
-                    <AccentDot />
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{point.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground leading-relaxed max-w-sm">
-                      {point.detail}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Panel>
+        <PlpPositionPanel />
       </div>
+
+      <HowItWorks points={POINTS} />
     </div>
   );
 }
