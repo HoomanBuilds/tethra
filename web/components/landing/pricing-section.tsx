@@ -5,56 +5,56 @@ import { Check, Zap } from "lucide-react";
 
 const plans = [
   {
-    name: "Management fee",
-    description: "What we charge to hold your deposit",
-    price: { monthly: 0, annual: 0 },
+    tier: "Tier 1",
+    name: "Predict PLP vault",
+    description: "Underwrite BTC markets on DeepBook Predict.",
+    headline: "90%",
+    headlineSub: "of every gain is yours",
     features: [
-      "No management fee",
-      "No deposit fee",
-      "No withdrawal fee",
-      "No lock-up period",
-      "Permissionless access",
+      "Earn the Predict premium, auto-compounded",
+      "10% performance fee, on profit only",
+      "No management, deposit, or withdrawal fee",
+      "A keeper redeems your settled positions",
+      "Risk bounded by conservative exposure caps",
     ],
-    cta: "Open a vault",
-    highlight: false,
-  },
-  {
-    name: "Performance fee",
-    description: "Charged only on realized vault profit",
-    price: { monthly: 15, annual: 15 },
-    features: [
-      "10% of realized profit",
-      "Fee on profit only",
-      "No fee without new gains",
-      "No fee on principal",
-      "Auto-compounded returns",
-      "Conservative exposure caps",
-      "Keeper-redeemed positions",
-    ],
-    cta: "See the model",
+    cta: "Provide liquidity",
     highlight: true,
   },
   {
-    name: "What you keep",
-    description: "Your share of every realized gain",
-    price: { monthly: null, annual: null },
+    tier: "Tier 2",
+    name: "Margin lending",
+    description: "Lend SUI or DBUSDC on DeepBook Margin.",
+    headline: "90%",
+    headlineSub: "of profit, plus reclaimed referral yield",
     features: [
-      "90% of realized profit",
-      "100% of your principal",
-      "Trustless on-chain custody",
-      "Withdraw any time",
-      "Bounded by liquidity",
-      "Auto-compounding vault",
-      "Verifiable share math",
-      "Open-source contract",
+      "Variable yield paid by margin borrowers",
+      "50% referral fee reclaimed and compounded for you",
+      "10% performance fee, on profit only",
+      "SUI and DBUSDC pools",
+      "No management fee",
     ],
-    cta: "Read the code",
+    cta: "Lend on Margin",
+    highlight: false,
+  },
+  {
+    tier: "Tier 3",
+    name: "tPLP borrow market",
+    description: "Supply dUSDC, or borrow against your tPLP.",
+    headline: "100%",
+    headlineSub: "of the borrow interest to suppliers",
+    features: [
+      "Supply dUSDC with zero supply fee",
+      "Borrow up to 50% LTV against your tPLP",
+      "Self-redeeming liquidation, no oracle",
+      "Only fee is a 5% liquidation penalty",
+      "Open, isolated market",
+    ],
+    cta: "Supply or borrow",
     highlight: false,
   },
 ];
 
 export function PricingSection() {
-  const [isAnnual, setIsAnnual] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -78,17 +78,23 @@ export function PricingSection() {
           <div className="lg:col-span-7">
             <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-8">
               <span className="w-12 h-px bg-foreground/30" />
-              Pricing
+              Markets
             </span>
             <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-Fees on
+Three markets.
               <br />
-              <span className="text-stroke">profit.</span>
+              <span className="text-stroke">You keep more.</span>
             </h2>
+            <p className={`mt-8 text-lg text-muted-foreground max-w-md leading-relaxed transition-all duration-1000 delay-200 ${
+              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}>
+              One deposit, three composable markets. You keep 90% of every gain
+              and all of your principal, and supplying to the borrow market is free.
+            </p>
           </div>
-          
+
           <div className="lg:col-span-5 relative p-0 h-96 lg:h-auto">
             {/* Whale image */}
             <div className={`absolute inset-0 pointer-events-none transition-all duration-1000 delay-100 ${
@@ -104,56 +110,45 @@ Fees on
           </div>
         </div>
 
-        {/* Pricing cards - Horizontal layout with overlap */}
+        {/* Market cards - Horizontal layout with overlap */}
         <div className="relative">
           <div className="grid lg:grid-cols-3 gap-4 lg:gap-0">
             {plans.map((plan, index) => (
               <div
                 key={plan.name}
                 className={`relative bg-background border transition-all duration-700 ${
-                  plan.highlight 
-                    ? "border-foreground lg:-mx-2 lg:z-10 lg:scale-105" 
+                  plan.highlight
+                    ? "border-foreground lg:-mx-2 lg:z-10 lg:scale-105"
                     : "border-foreground/10 lg:first:-mr-2 lg:last:-ml-2"
                 } ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                {/* Popular badge */}
+                {/* Core market badge */}
                 {plan.highlight && (
                   <div className="absolute -top-4 left-8 right-8 flex justify-center">
                     <span className="inline-flex items-center gap-2 px-4 py-2 bg-foreground text-background text-xs font-mono uppercase tracking-widest">
                       <Zap className="w-3 h-3" />
-                      Our only fee
+                      Core market
                     </span>
                   </div>
                 )}
 
                 <div className="p-8 lg:p-10">
-                  {/* Plan header */}
+                  {/* Market header */}
                   <div className="mb-8 pb-8 border-b border-foreground/10">
-                    <span className="font-mono text-xs text-muted-foreground">
-                      {String(index + 1).padStart(2, "0")}
+                    <span className="font-mono text-xs text-muted-foreground uppercase tracking-widest">
+                      {plan.tier}
                     </span>
                     <h3 className="text-2xl lg:text-3xl font-display mt-2">{plan.name}</h3>
                     <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
                   </div>
 
-                  {/* Price */}
+                  {/* Headline rate */}
                   <div className="mb-8">
-                    {plan.price.monthly !== null ? (
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-5xl lg:text-6xl font-display">
-                          {isAnnual ? plan.price.annual : plan.price.monthly}%
-                        </span>
-                        <span className="text-muted-foreground text-sm">of profit</span>
-                      </div>
-                    ) : (
-                      <span className="text-4xl font-display">90%</span>
-                    )}
-                    {plan.price.monthly !== null && plan.price.monthly > 0 && (
-                      <p className="text-xs text-muted-foreground mt-2 font-mono">
-                        {isAnnual ? "on realized profit" : "on realized profit"}
-                      </p>
-                    )}
+                    <span className="text-5xl lg:text-6xl font-display">{plan.headline}</span>
+                    <p className="text-xs text-muted-foreground mt-2 font-mono">
+                      {plan.headlineSub}
+                    </p>
                   </div>
 
                   {/* Features */}
@@ -182,18 +177,18 @@ Fees on
           </div>
         </div>
 
-        {/* Bottom note with icons */}
+        {/* Bottom note */}
         <div className={`mt-20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 pt-12 border-t border-foreground/10 transition-all duration-1000 delay-500 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
           <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#eca8d6]" />
-              No management fee
+              No management fee on any tier
             </span>
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#eca8d6]" />
-              No deposit fees
+              Fees only on realized profit
             </span>
             <span className="flex items-center gap-2">
               <Check className="w-4 h-4 text-[#eca8d6]" />
