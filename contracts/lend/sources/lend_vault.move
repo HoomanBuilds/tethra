@@ -30,6 +30,9 @@ public struct LendVault has key {
     fee_bps: u64,
     fee_treasury: address,
     deposit_cap: u64,
+    // ID of our deepbook_margin SupplyReferral, so the vault's supply earns the
+    // referral share of the pool spread instead of forfeiting it to the default.
+    referral: Option<ID>,
 }
 
 fun init(witness: LEND_VAULT, ctx: &mut TxContext) {
@@ -52,6 +55,7 @@ fun init(witness: LEND_VAULT, ctx: &mut TxContext) {
         fee_bps: DEFAULT_FEE_BPS,
         fee_treasury: ctx.sender(),
         deposit_cap: 0,
+        referral: option::none(),
     });
 }
 
@@ -93,7 +97,7 @@ public fun deposit(
         registry,
         vault.supplier_cap.borrow(),
         coin,
-        option::none(),
+        vault.referral,
         clock,
     );
     let shares = preview_deposit(before, total_shares, amount);
@@ -151,6 +155,31 @@ public fun set_deposit_cap(_: &AdminCap, vault: &mut LendVault, cap: u64) {
     vault.deposit_cap = cap;
 }
 
+public fun set_referral(_: &AdminCap, vault: &mut LendVault, id: ID) {
+    vault.referral = option::some(id);
+}
+
+/// Supply external yield (e.g. claimed margin referral fees) into the vault's
+/// position without minting shares, so NAV per share rises for every holder.
+public fun compound(
+    vault: &mut LendVault,
+    pool: &mut MarginPool<SUI>,
+    registry: &MarginRegistry,
+    coin: Coin<SUI>,
+    clock: &Clock,
+) {
+    assert!(vault.supplier_cap.is_some(), ENotInitialized);
+    assert!(coin.value() > 0, EZeroAmount);
+    margin_pool::supply<SUI>(
+        pool,
+        registry,
+        vault.supplier_cap.borrow(),
+        coin,
+        vault.referral,
+        clock,
+    );
+}
+
 public fun preview_deposit(total_underlying: u64, total_shares: u64, amount_in: u64): u64 {
     mul_div(amount_in, total_shares + VIRTUAL, total_underlying + VIRTUAL)
 }
@@ -170,6 +199,8 @@ public fun total_shares(vault: &LendVault): u64 { coin::total_supply(&vault.shar
 public fun fee_bps(vault: &LendVault): u64 { vault.fee_bps }
 
 public fun deposit_cap(vault: &LendVault): u64 { vault.deposit_cap }
+
+public fun referral(vault: &LendVault): Option<ID> { vault.referral }
 
 public fun is_initialized(vault: &LendVault): bool { vault.supplier_cap.is_some() }
 
