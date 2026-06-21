@@ -28,6 +28,7 @@ export const navGroups: NavGroup[] = [
       { name: "Analytics", href: "/app/analytics" },
       { name: "Vol Surface", href: "/app/surface" },
       { name: "PLP Risk", href: "/app/risk" },
+      { name: "Exposure", href: "/app/exposure" },
       { name: "Activity", href: "/app/activity" },
     ],
   },
