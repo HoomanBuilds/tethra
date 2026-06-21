@@ -19,7 +19,7 @@ const OUT = resolve(HERE, '../../../web/lib/data/backtest.json');
 // Configured pool TVL used across the strategy sims (econ.ts ~1.015M, stress.ts 1M).
 // We use the round $1M figure that backtest/stress.ts use for TVL-relative numbers.
 const TVL = 1_000_000;
-const FEE = 0.15; // performance fee to vault; 85% to depositors.
+const FEE = 0.1; // performance fee to vault; 90% to depositors.
 const EXPOSURE_CAP = 1000; // $/oracle worst-direction cap studied in stress.ts.
 
 const read = <T>(f: string): T => JSON.parse(readFileSync(resolve(DATA, f), 'utf8')) as T;
@@ -48,7 +48,7 @@ const os: OAgg[] = perOracle(L); // sorted by settlement time, prem > 0 only.
 const nPositions = L.reds.length; // real redemption count.
 
 // NAV compounds realized house PnL per settled oracle against the pool TVL.
-// drawdown = running peak-to-trough % of NAV. feeYield = cumulative 15% fee on
+// drawdown = running peak-to-trough % of NAV. feeYield = cumulative 10% fee on
 // positive NAV increments (high-water-marked: fee only on new profit).
 let navVal = 100;
 let peak = 100;
@@ -218,8 +218,8 @@ const out = {
     nPositions,
     grossYieldPct,
     netYieldPct,
-    feeToDepositorsPct: 85,
-    feeToVaultPct: 15,
+    feeToDepositorsPct: 90,
+    feeToVaultPct: 10,
     windowLabel,
   },
   nav: navD,

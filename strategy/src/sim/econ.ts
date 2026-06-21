@@ -14,7 +14,7 @@ console.log(`measured: ${days.toFixed(0)}d, premium ${fmt(premium)}, house profi
 console.log(`annualized: premium ${fmt(annualPremium)}/yr, profit ${fmt(annualPremium * edge)}/yr on ${fmt(poolTVL)} pool`);
 console.log(`current pool yield: ${(100 * (annualPremium * edge) / poolTVL).toFixed(2)}% APR  (flow-limited)\n`);
 
-const FEE = 0.15;
+const FEE = 0.1;
 const MGMT = 0.0;
 function depositorNet(volMult: number, edgeA: number, tvl: number): number {
   const annualProfit = annualPremium * volMult * edgeA;
