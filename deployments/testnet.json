@@ -36,7 +36,7 @@
     "publishDigest": "2FFQkXjEbSB2Tsa7iPsHSqndE3ighbv2CYS8M7hCnaTE",
     "package": "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93",
     "upgradeCap": "0x184b30dc209cd4d95ac27d2c580a2742b252d6ed75cb052904c38b7d475b29f5",
-    "note": "CANONICAL Tier 2 lending deployment: both SUI (lendVault, initialized) and dUSDC (lendVaultDbusdc) live in this one package. The frontend (web/lib/lend.ts) and keeper use these. Links deepbook_margin v1.",
+    "note": "SUPERSEDED by lendVaultV3 (referral-enabled). Both vaults here are empty; kept for history. Links deepbook_margin v1.",
     "lendVault": {
       "vault": "0x6310194b5838e5dfc06dcc254a80dc7897eb1c43cbb3d65cc539b79b6c3aa264",
       "initializeDigest": "DbjhG4XB9muqiWQuRyp3fZd7Erx6SAFPHpxCEf35PPHM",
@@ -56,6 +56,29 @@
       "linkedRegistry": "0x48d7640dfae2c6e9ceeada197a7a1643984b5a24c55a0c6c023dac77e0339f75",
       "deepbookMarginV1": "0xb8620c24c9ea1a4a41e79613d2b3d1d93648d1bb6f6b789a7c8f261c94110e4b"
     }
+  },
+  "lendVaultV3": {
+    "publishDigest": "FrifcNKFDn8YztL9oEhy63LptxMc3YnAe8iT2wCPrCd3",
+    "package": "0xc61b07b4d84e93be8d8c033f8a52c35d594bbeb486f832d67744d0b83a357d6d",
+    "upgradeCap": "0x0e9437b035f40fd2246ad57e45becfdc26a77e3ec2ca0324be024fce13cc550c",
+    "note": "CANONICAL Tier 2 (referral-enabled). Deposits route through a per-pool deepbook_margin SupplyReferral so the vault captures the 50% referral slice of the pool spread instead of forfeiting it to the default; claim+compound (NAV-lifting, no new shares) via keeper/src/lend_claim_referral.ts. Referral objects are owned by the deployer (owner-gated claim). Links deepbook_margin v1. The frontend (web/lib/lend.ts) uses these.",
+    "lendVault": {
+      "vault": "0xea490c338eb9709147b913fdcdf44c1b928f79c01419f8fbc50f9254e71e3cd8",
+      "adminCap": "0x594d243ef4083614764db9ca6fb8c8d4b306513da26a7ecec62f45e0fbb3e8bf",
+      "shareType": "0xc61b07b4d84e93be8d8c033f8a52c35d594bbeb486f832d67744d0b83a357d6d::lend_vault::LEND_VAULT",
+      "marginPool": "0xcdbbe6a72e639b647296788e2e4b1cac5cea4246028ba388ba1332ff9a382eea",
+      "referral": "0xc4f4e9991dd61539a78dc17a76da86a3cdd35195ca6508736b7f0ebc8ceb0203"
+    },
+    "lendVaultDbusdc": {
+      "vault": "0xfa7a4c5653ea73c48b2d6376cd660e67a995b7e12a5e419e4ae0fafd9455ea4f",
+      "adminCap": "0x271067a0468ae27b30db5b548224d8c4def70379a5b97fe993808847e318b9b8",
+      "shareType": "0xc61b07b4d84e93be8d8c033f8a52c35d594bbeb486f832d67744d0b83a357d6d::lend_vault_dbusdc::LEND_VAULT_DBUSDC",
+      "marginPool": "0xf08568da93834e1ee04f09902ac7b1e78d3fdf113ab4d2106c7265e95318b14d",
+      "dbusdcType": "0xf7152c05930480cd740d7311b5b8b45c6f488e3a53a11c3f74a6fac36a52e0d7::DBUSDC::DBUSDC",
+      "referral": "0xe229d2ca1819d6039d0e191f05865f4751d2220a66b1e6f72365e5cecbd84955"
+    },
+    "linkedRegistry": "0x48d7640dfae2c6e9ceeada197a7a1643984b5a24c55a0c6c023dac77e0339f75",
+    "deepbookMarginV1": "0xb8620c24c9ea1a4a41e79613d2b3d1d93648d1bb6f6b789a7c8f261c94110e4b"
   },
   "borrowMarket": {
     "publishDigest": "HZMY15iCVmMaFhhh6zFH6WYBrjYXE57CCF1oV86ebgkg",

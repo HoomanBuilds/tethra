@@ -25,11 +25,11 @@ export interface LendAsset {
 export const LEND_ASSETS: Record<"sui" | "dusdc", LendAsset> = {
   sui: {
     key: "sui",
-    package: "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93",
-    vault: "0x6310194b5838e5dfc06dcc254a80dc7897eb1c43cbb3d65cc539b79b6c3aa264",
+    package: "0xc61b07b4d84e93be8d8c033f8a52c35d594bbeb486f832d67744d0b83a357d6d",
+    vault: "0xea490c338eb9709147b913fdcdf44c1b928f79c01419f8fbc50f9254e71e3cd8",
     module: "lend_vault",
     shareType:
-      "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93::lend_vault::LEND_VAULT",
+      "0xc61b07b4d84e93be8d8c033f8a52c35d594bbeb486f832d67744d0b83a357d6d::lend_vault::LEND_VAULT",
     marginPool:
       "0xcdbbe6a72e639b647296788e2e4b1cac5cea4246028ba388ba1332ff9a382eea",
     assetType: "0x2::sui::SUI",
@@ -39,11 +39,11 @@ export const LEND_ASSETS: Record<"sui" | "dusdc", LendAsset> = {
   },
   dusdc: {
     key: "dusdc",
-    package: "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93",
-    vault: "0xccc2def235d38953bfaadc8c5420221149c42d131fb4ae148e7a7dd229f24856",
+    package: "0xc61b07b4d84e93be8d8c033f8a52c35d594bbeb486f832d67744d0b83a357d6d",
+    vault: "0xfa7a4c5653ea73c48b2d6376cd660e67a995b7e12a5e419e4ae0fafd9455ea4f",
     module: "lend_vault_dbusdc",
     shareType:
-      "0x267106787142584a4d9ce16c461b2f525a880634198fb8bb73eb63e252489b93::lend_vault_dbusdc::LEND_VAULT_DBUSDC",
+      "0xc61b07b4d84e93be8d8c033f8a52c35d594bbeb486f832d67744d0b83a357d6d::lend_vault_dbusdc::LEND_VAULT_DBUSDC",
     marginPool:
       "0xf08568da93834e1ee04f09902ac7b1e78d3fdf113ab4d2106c7265e95318b14d",
     assetType:
