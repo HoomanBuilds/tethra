@@ -340,7 +340,7 @@ export default function AnalyticsPage() {
         Derived from a passive PLP house backtest over settled oracles in the
         committed testnet flow. NAV compounds realized house PnL against the
         configured pool size. Drawdown is running peak to trough. Fee yield is
-        the cumulative 15 percent performance fee on new profit. Pricing pairs
+        the cumulative 10 percent performance fee on new profit. Pricing pairs
         compare the SVI model ask to the recorded on-chain ask.
       </p>
     </div>
