@@ -5,27 +5,31 @@ import { useEffect, useRef, useState } from "react";
 const features = [
   {
     number: "01",
-    title: "One-Deposit Vault",
-    description: "Deposit once and you're done. Tethra supplies PLP liquidity on DeepBook Predict or lends on DeepBook Margin, and your vault shares can back a dUSDC loan. Fully on-chain, no active management required.",
-    stats: { value: "1", label: "deposit to start" },
+    title: "Independently priced, to 1e-5",
+    description:
+      "Every position is valued by Tethra's own SVI options engine and checked against DeepBook Predict's live on-chain ask to a 1e-5 median error, so your share price is verifiably honest, not asserted. The same engine renders the live volatility surface inside the app.",
+    stats: { value: "~1e-5", label: "median pricing error" },
   },
   {
     number: "02",
-    title: "Auto-Compounding Yield",
-    description: "Settled returns are continuously redeployed into PLP liquidity. Your position grows from compounding without any manual action.",
-    stats: { value: "24/7", label: "compounding" },
+    title: "Reclaimed referral yield",
+    description:
+      "Tethra routes its margin deposits through a DeepBook supply referral, reclaiming the referral half of the pool spread the protocol would otherwise keep, and compounds it back to depositors.",
+    stats: { value: "50%", label: "of the spread, reclaimed" },
   },
   {
     number: "03",
-    title: "Conservative Exposure Caps",
-    description: "Exposure sits behind Predict's protocol-level cap, and the strategy backtests set conservative deposit and tenor policy to contain drawdown.",
-    stats: { value: "10%", label: "fee on profit" },
+    title: "Risk you verify, not trust",
+    description:
+      "A live per-oracle exposure breakdown and an instant BTC stress test, read from on-chain state and repriced through the surface, so whether the pool is safe is something you check yourself.",
+    stats: { value: "live", label: "exposure + stress, on-chain" },
   },
   {
     number: "04",
-    title: "Validated SVI Pricing",
-    description: "Each position is priced with an SVI model matched against the protocol on-chain. Independent valuation keeps share prices honest.",
-    stats: { value: "~1e-5", label: "pricing error" },
+    title: "Hands-off, keeper-run",
+    description:
+      "A keeper redeems settled Predict positions in real on-chain transactions, keeping every depositor's NAV current and compounding returns with zero manual steps. Withdraw to dUSDC any time.",
+    stats: { value: "0", label: "manual actions" },
   },
 ];
 
@@ -65,8 +69,8 @@ function ParticleVisualization() {
     const particles = Array.from({ length: COUNT }, (_, i) => {
       const seed = i * 1.618;
       return {
-        bx: ((seed * 127.1) % 1),
-        by: ((seed * 311.7) % 1),
+        bx: (seed * 127.1) % 1,
+        by: (seed * 311.7) % 1,
         phase: seed * Math.PI * 2,
         speed: 0.4 + (seed % 0.4),
         radius: 1.2 + (seed % 2.2),
@@ -138,7 +142,7 @@ export function FeaturesSection() {
       ([entry]) => {
         if (entry.isIntersecting) setIsVisible(true);
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (sectionRef.current) observer.observe(sectionRef.current);
@@ -162,7 +166,9 @@ export function FeaturesSection() {
               </span>
               <h2
                 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
                 }`}
               >
                 Liquidity
@@ -171,10 +177,17 @@ export function FeaturesSection() {
               </h2>
             </div>
             <div className="lg:col-span-5 lg:pb-4">
-              <p className={`text-xl text-muted-foreground leading-relaxed transition-all duration-1000 delay-200 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}>
-                Deposit once and Tethra puts it to work on DeepBook: PLP liquidity on Predict, or lending on Margin. Your vault shares double as collateral you can borrow against. No active management.
+              <p
+                className={`text-xl text-muted-foreground leading-relaxed transition-all duration-1000 delay-200 ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
+                }`}
+              >
+                Deposit once and Tethra puts it to work on DeepBook: PLP
+                liquidity on Predict, or lending on Margin. Your vault shares
+                double as collateral you can borrow against. No active
+                management.
               </p>
             </div>
           </div>
@@ -183,9 +196,11 @@ export function FeaturesSection() {
         {/* Bento Grid Layout */}
         <div className="grid lg:grid-cols-12 gap-4 lg:gap-6">
           {/* Large feature card */}
-          <div 
+          <div
             className={`lg:col-span-12 relative bg-black border border-foreground/10 min-h-[500px] overflow-hidden group transition-all duration-700 flex ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-12"
             }`}
             onMouseEnter={() => setActiveFeature(0)}
           >
@@ -193,7 +208,9 @@ export function FeaturesSection() {
             <div className="relative flex-1 p-8 lg:p-12 bg-black">
               <ParticleVisualization />
               <div className="relative z-10">
-                <span className="font-mono text-sm text-muted-foreground">{features[0].number}</span>
+                <span className="font-mono text-sm text-muted-foreground">
+                  {features[0].number}
+                </span>
                 <h3 className="text-3xl lg:text-4xl font-display mt-4 mb-6 group-hover:translate-x-2 transition-transform duration-500">
                   {features[0].title}
                 </h3>
@@ -201,8 +218,12 @@ export function FeaturesSection() {
                   {features[0].description}
                 </p>
                 <div>
-                  <span className="text-5xl lg:text-6xl font-display">{features[0].stats.value}</span>
-                  <span className="block text-sm text-muted-foreground font-mono mt-2">{features[0].stats.label}</span>
+                  <span className="text-5xl lg:text-6xl font-display">
+                    {features[0].stats.value}
+                  </span>
+                  <span className="block text-sm text-muted-foreground font-mono mt-2">
+                    {features[0].stats.label}
+                  </span>
                 </div>
               </div>
             </div>
@@ -220,6 +241,36 @@ export function FeaturesSection() {
               <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent" />
             </div>
           </div>
+
+          {/* Three supporting feature cards */}
+          {features.slice(1).map((f, i) => (
+            <div
+              key={f.title}
+              className={`lg:col-span-4 relative bg-black border border-foreground/10 p-8 overflow-hidden group transition-all duration-700 ${
+                isVisible
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-12"
+              }`}
+              style={{ transitionDelay: `${(i + 1) * 100}ms` }}
+              onMouseEnter={() => setActiveFeature(i + 1)}
+            >
+              <span className="font-mono text-sm text-muted-foreground">
+                {f.number}
+              </span>
+              <h3 className="text-2xl font-display mt-4 mb-4 group-hover:translate-x-1 transition-transform duration-500">
+                {f.title}
+              </h3>
+              <p className="text-base text-muted-foreground leading-relaxed mb-6">
+                {f.description}
+              </p>
+              <div>
+                <span className="text-4xl font-display">{f.stats.value}</span>
+                <span className="block text-sm text-muted-foreground font-mono mt-1">
+                  {f.stats.label}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
