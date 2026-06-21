@@ -5,22 +5,6 @@ import { Check, Zap } from "lucide-react";
 
 const plans = [
   {
-    tier: "Tier 1",
-    name: "Predict PLP vault",
-    description: "Underwrite BTC markets on DeepBook Predict.",
-    headline: "90%",
-    headlineSub: "of every gain is yours",
-    features: [
-      "Earn the Predict premium, auto-compounded",
-      "10% performance fee, on profit only",
-      "No management, deposit, or withdrawal fee",
-      "A keeper redeems your settled positions",
-      "Risk bounded by conservative exposure caps",
-    ],
-    cta: "Provide liquidity",
-    highlight: true,
-  },
-  {
     tier: "Tier 2",
     name: "Margin lending",
     description: "Lend SUI or DBUSDC on DeepBook Margin.",
@@ -35,6 +19,22 @@ const plans = [
     ],
     cta: "Lend on Margin",
     highlight: false,
+  },
+  {
+    tier: "Tier 1",
+    name: "Predict PLP vault",
+    description: "Underwrite BTC markets on DeepBook Predict.",
+    headline: "90%",
+    headlineSub: "of every gain is yours",
+    features: [
+      "Earn the Predict premium, auto-compounded",
+      "10% performance fee, on profit only",
+      "No management, deposit, or withdrawal fee",
+      "A keeper redeems your settled positions",
+      "Risk bounded by conservative exposure caps",
+    ],
+    cta: "Provide liquidity",
+    highlight: true,
   },
   {
     tier: "Tier 3",
@@ -118,7 +118,7 @@ Three markets.
                 key={plan.name}
                 className={`relative bg-background border transition-all duration-700 ${
                   plan.highlight
-                    ? "border-foreground lg:-mx-2 lg:z-10 lg:scale-105"
+                    ? "border-foreground lg:-mx-2 lg:-mt-6 lg:z-10 lg:scale-105"
                     : "border-foreground/10 lg:first:-mr-2 lg:last:-ml-2"
                 } ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
                 style={{ transitionDelay: `${index * 100}ms` }}
