@@ -3,14 +3,17 @@
 import { useCurrentAccount, useSuiClient } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
 import { PACKAGE, explorerTx } from "@/lib/config";
+import { LEND_ASSETS } from "@/lib/lend";
+import { BORROW_MARKET } from "@/lib/borrow";
 import { PageHeader, Panel, EmptyState, Tag } from "@/components/app/app-kit";
 import { ConnectWallet } from "@/components/app/connect-wallet";
 
-type VaultAction = "Deposit" | "Withdraw";
+type ActionKind = "in" | "out" | "neutral";
 
 interface ActivityRow {
   digest: string;
-  action: VaultAction;
+  label: string;
+  kind: ActionKind;
   timestampMs: number | null;
   status: string;
 }
@@ -21,27 +24,57 @@ function normalizeId(id: string): string {
   return "0x" + hex.toLowerCase().padStart(64, "0");
 }
 
-const PACKAGE_NORM = normalizeId(PACKAGE);
+const PLP_PKG = normalizeId(PACKAGE);
+const LEND_PKG = normalizeId(LEND_ASSETS.sui.package);
+const BORROW_PKG = normalizeId(BORROW_MARKET.package);
 
-const VAULT_FN: Record<string, VaultAction> = {
-  deposit: "Deposit",
-  withdraw: "Withdraw",
-};
+// Map a single Move call to a Tethra action label, across all three tiers.
+function callAction(mv: any): { label: string; kind: ActionKind } | null {
+  const pkg = normalizeId(mv.package);
+  const fn = mv.function;
 
-// Inspect the programmable transaction for a vault::deposit / vault::withdraw call.
-function vaultAction(tx: any): VaultAction | null {
+  if (pkg === PLP_PKG && mv.module === "vault") {
+    if (fn === "deposit") return { label: "PLP deposit", kind: "in" };
+    if (fn === "withdraw") return { label: "PLP withdraw", kind: "out" };
+  }
+
+  if (pkg === LEND_PKG && (mv.module === "lend_vault" || mv.module === "lend_vault_dbusdc")) {
+    const sym = mv.module === "lend_vault" ? "SUI" : "DBUSDC";
+    if (fn === "deposit") return { label: `Lend ${sym}`, kind: "in" };
+    if (fn === "withdraw") return { label: `Withdraw ${sym}`, kind: "out" };
+    if (fn === "compound") return { label: `Compound ${sym} referral`, kind: "neutral" };
+  }
+
+  if (pkg === BORROW_PKG && mv.module === "market") {
+    if (fn === "supply") return { label: "Supply dUSDC", kind: "in" };
+    if (fn === "unsupply") return { label: "Withdraw supply", kind: "out" };
+    if (fn === "borrow") return { label: "Borrow dUSDC", kind: "out" };
+    if (fn === "repay") return { label: "Repay dUSDC", kind: "in" };
+    if (fn === "add_collateral") return { label: "Add collateral", kind: "in" };
+    if (fn === "withdraw_collateral") return { label: "Withdraw collateral", kind: "out" };
+  }
+
+  return null;
+}
+
+// Collect every recognized Tethra action in a programmable transaction (a single
+// PTB can do more than one, e.g. add collateral + borrow).
+function txActions(tx: any): { label: string; kind: ActionKind }[] {
   const kind = tx?.transaction?.data?.transaction;
-  if (!kind || kind.kind !== "ProgrammableTransaction") return null;
+  if (!kind || kind.kind !== "ProgrammableTransaction") return [];
   const commands = Array.isArray(kind.transactions) ? kind.transactions : [];
+  const out: { label: string; kind: ActionKind }[] = [];
+  const seen = new Set<string>();
   for (const c of commands) {
     const mv = c?.MoveCall;
     if (!mv) continue;
-    if (mv.module !== "vault") continue;
-    if (normalizeId(mv.package) !== PACKAGE_NORM) continue;
-    const action = VAULT_FN[mv.function];
-    if (action) return action;
+    const a = callAction(mv);
+    if (a && !seen.has(a.label)) {
+      seen.add(a.label);
+      out.push(a);
+    }
   }
-  return null;
+  return out;
 }
 
 const MONTHS = [
@@ -65,32 +98,44 @@ function shortDigest(digest: string): string {
   return digest.length > 14 ? `${digest.slice(0, 8)}…${digest.slice(-4)}` : digest;
 }
 
+const dotColor = (kind: ActionKind): string =>
+  kind === "in" ? "#eca8d6" : kind === "out" ? "rgba(236,234,226,0.4)" : "rgba(236,234,226,0.25)";
+
 export default function ActivityPage() {
   const account = useCurrentAccount();
   const client = useSuiClient();
   const address = account?.address ?? null;
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["vault-activity", address],
+    queryKey: ["tethra-activity", address],
     enabled: !!address,
     queryFn: async (): Promise<ActivityRow[]> => {
-      const res = await client.queryTransactionBlocks({
-        filter: { FromAddress: address as string },
-        options: { showInput: true, showEffects: true },
-        limit: 25,
-        order: "descending",
-      });
       const rows: ActivityRow[] = [];
-      for (const tx of res.data ?? []) {
-        const action = vaultAction(tx);
-        if (!action) continue;
-        const status = tx.effects?.status?.status ?? "unknown";
-        rows.push({
-          digest: tx.digest,
-          action,
-          timestampMs: tx.timestampMs ? Number(tx.timestampMs) : null,
-          status: status === "success" ? "Success" : status === "failure" ? "Failed" : "Unknown",
+      let cursor: string | null = null;
+      // Scan a few pages: the deployer/admin address has many non-Tethra txs.
+      for (let page = 0; page < 3; page++) {
+        const res = await client.queryTransactionBlocks({
+          filter: { FromAddress: address as string },
+          options: { showInput: true, showEffects: true },
+          limit: 50,
+          order: "descending",
+          cursor,
         });
+        for (const tx of res.data ?? []) {
+          const acts = txActions(tx);
+          if (acts.length === 0) continue;
+          const status = tx.effects?.status?.status ?? "unknown";
+          rows.push({
+            digest: tx.digest,
+            label: acts.map((a) => a.label).join(" + "),
+            kind: acts[0].kind,
+            timestampMs: tx.timestampMs ? Number(tx.timestampMs) : null,
+            status:
+              status === "success" ? "Success" : status === "failure" ? "Failed" : "Unknown",
+          });
+        }
+        if (!res.hasNextPage || !res.nextCursor) break;
+        cursor = res.nextCursor;
       }
       return rows;
     },
@@ -100,14 +145,14 @@ export default function ActivityPage() {
     <div className="max-w-[1400px] mx-auto">
       <PageHeader
         label="Activity"
-        title="Your vault history."
-        description="Deposits and withdrawals signed from your connected address on Sui testnet, read straight from chain."
+        title="Your Tethra history."
+        description="Every Tethra transaction signed from your connected address on Sui testnet: PLP, lend, supply, and borrow, read straight from chain."
       />
 
       {!address ? (
         <EmptyState
           title="Connect to see your activity"
-          description="Your vault deposits and withdrawals on testnet will appear here."
+          description="Your PLP, lend, supply, and borrow transactions on testnet will appear here."
           image="/images/connection.png"
           action={
             <ConnectWallet
@@ -134,14 +179,14 @@ export default function ActivityPage() {
         </Panel>
       ) : !data || data.length === 0 ? (
         <EmptyState
-          title="No vault activity yet"
-          description="Deposit dUSDC to get started."
+          title="No Tethra activity yet"
+          description="Deposit, lend, supply, or borrow to get started."
           image="/images/connection.png"
         />
       ) : (
         <Panel className="overflow-hidden">
           <div className="flex items-center justify-between gap-4 border-b border-foreground/10 px-6 py-4">
-            <Tag>Recent vault transactions</Tag>
+            <Tag>Recent Tethra transactions</Tag>
             <span className="text-xs font-mono text-muted-foreground">
               {data.length} {data.length === 1 ? "entry" : "entries"}
             </span>
@@ -155,13 +200,10 @@ export default function ActivityPage() {
                 <div className="flex items-center gap-4">
                   <span
                     className="h-2 w-2 rounded-full shrink-0"
-                    style={{
-                      backgroundColor:
-                        row.action === "Deposit" ? "#eca8d6" : "rgba(236,234,226,0.4)",
-                    }}
+                    style={{ backgroundColor: dotColor(row.kind) }}
                   />
                   <div>
-                    <span className="block font-medium">{row.action}</span>
+                    <span className="block font-medium">{row.label}</span>
                     <a
                       href={explorerTx(row.digest)}
                       target="_blank"
