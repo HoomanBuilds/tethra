@@ -33,9 +33,7 @@ export default function DepositPage() {
       />
 
       <div className="grid gap-8 lg:grid-cols-2 items-start">
-        <div className="max-w-md w-full">
-          <DepositWithdraw />
-        </div>
+        <DepositWithdraw />
 
         <PlpPositionPanel />
       </div>

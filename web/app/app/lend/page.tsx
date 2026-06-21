@@ -203,9 +203,7 @@ export default function LendPage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2 items-start mt-8">
-        <div className="max-w-md w-full">
-          <LendDepositWithdraw asset={asset} />
-        </div>
+        <LendDepositWithdraw asset={asset} />
 
         <Panel className="p-6 lg:p-8">
           <Tag>Your position</Tag>
