@@ -10,7 +10,7 @@ export function Topbar() {
       <div className="flex items-center justify-between h-full px-6 lg:px-12">
         <div className="flex items-center gap-2">
           <MobileNav />
-          <Link href="/app" className="flex items-center gap-2 lg:hidden">
+          <Link href="/" className="flex items-center gap-2 lg:hidden">
             <span className="font-display text-xl tracking-tight text-foreground">Tethra</span>
             <span className="font-mono text-[10px] mt-0.5 text-muted-foreground">TM</span>
           </Link>
