@@ -3,12 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dry": "tsx src/keeper.ts --dry",
-    "start": "tsx src/keeper.ts",
-    "liquidator": "tsx src/liquidator.ts",
-    "liquidator:dry": "tsx src/liquidator.ts --dry",
-    "roundtrip": "tsx src/roundtrip.ts",
-    "lend": "tsx src/lend_roundtrip.ts"
+    "prod": "node --env-file-if-exists=.env --import tsx src/prod.ts",
+    "dry": "tsx --env-file-if-exists=.env src/keeper.ts --dry",
+    "start": "tsx --env-file-if-exists=.env src/keeper.ts",
+    "liquidator": "tsx --env-file-if-exists=.env src/liquidator.ts",
+    "liquidator:dry": "tsx --env-file-if-exists=.env src/liquidator.ts --dry",
+    "roundtrip": "tsx --env-file-if-exists=.env src/roundtrip.ts",
+    "lend": "tsx --env-file-if-exists=.env src/lend_roundtrip.ts"
   },
   "dependencies": {
     "@mysten/sui": "^1.30.0"
