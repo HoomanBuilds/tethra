@@ -61,6 +61,18 @@ export default function VaultOverview() {
     ],
   };
 
+  // NAV change since inception, with a sign, sensible precision (the pool moves
+  // in tiny amounts, so 2 decimals would always read 0.00), and no "+-".
+  const changePct = navData?.changePct ?? null;
+  const changeUp = (changePct ?? 0) > 0;
+  const changeStr = (() => {
+    if (changePct == null) return null;
+    const d = Math.abs(changePct) >= 0.1 ? 2 : 3;
+    const r = Number(changePct.toFixed(d));
+    const sign = r > 0 ? "+" : r < 0 ? "-" : "";
+    return `${sign}${Math.abs(r).toFixed(d)}% since inception`;
+  })();
+
   const yourShares = fromShares(shareBalance);
   const shareFraction =
     state && state.totalShares > 0n
@@ -123,9 +135,9 @@ export default function VaultOverview() {
         <Panel className="lg:col-span-2 p-6 lg:p-8 flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <Tag>PLP pool NAV, live from DeepBook Predict</Tag>
-            {navSeries.length > 0 && navData?.changePct != null && (
-              <span className="font-mono text-sm text-[#eca8d6]">
-                +{navData.changePct.toFixed(2)}% since inception
+            {navSeries.length > 0 && changeStr && (
+              <span className={`font-mono text-sm ${changeUp ? "text-[#eca8d6]" : "text-muted-foreground"}`}>
+                {changeStr}
               </span>
             )}
           </div>
